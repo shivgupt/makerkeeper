@@ -5,10 +5,10 @@ module.exports = {
 
     externals: ['electron'],
 
-    entry: './web3.js',
+    entry: './src/web3.js',
 
     output: {
-        path: path.join(__dirname, 'build'),
+        path: path.join(__dirname, '../build'),
         filename: 'mk.bundle.js'
     },
     
