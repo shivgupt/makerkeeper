@@ -21,10 +21,10 @@ Wrapped ETH; an ERC20 token that is exchangeable 1:1 with Ether. Only exists to 
  - `transferFrom(address src, address dst, uint wad)`: transfer `wad` WETH from `src` to `dst`
 
 ### Events
- - **`Approval(address indexed src, address indexed guy, uint wad)`**
- - **`Transfer(address indexed src, address indexed dst, uint wad)`**
- - **`Deposit(address indexed dst, uint wad)`**
- - **`Withdrawal(address indexed src, uint wad)`**
+ - `Approval(address indexed src, address indexed guy, uint wad)`
+ - `Transfer(address indexed src, address indexed dst, uint wad)`
+ - `Deposit(address indexed dst, uint wad)`
+ - `Withdrawal(address indexed src, uint wad)`
 
 
 
@@ -41,6 +41,7 @@ Pooled ETH; an ERC20 token that's exchangeable 1:1 with WETH. This is the collat
  - `transferFrom(address src, address dst, uint wad)`: transfer `wad` PETH from `src` to `dst`
 
 ### Events
+ - `LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
  - `Approval(address indexed src, address indexed guy, uint wad)`
  - `Transfer(address indexed src, address indexed dst, uint wad)`
  - `Mint(address indexed guy, uint wad)`
@@ -88,6 +89,14 @@ DAI stable coin; an ERC20 token that's pegged to the USD. Can be minted/borrowed
 
 
 ## Eth Medianizer: [0x729d19f657bd0614b4985cf1d82531c67569197b](https://etherscan.io/address/0x729d19f657bd0614b4985cf1d82531c67569197b)
+
+Saves a list of ETH market prices & calculates their median.
+
+### Calls/Reads:
+**`compute() => [bytes21,bool]`**: compute & save the median of submitted market price values eg `[0x3191fcea3f88f10000,true]`, **`indexes(address) => bytes12`**: mapping of submitted market prices according to who submitted them, **`next() => bytes12`**: the next position in our list of values that will be set ie 16, **`min() => uint96`**: the smallest set position in our list of values ie 7, **`read() => bytes32`**: returns the latest market price iff it is set eg `0x3191fcea3f88f10000`, **`peek() => [bytes32,bool]`**: return the latest market and whether or not it is set eg `[0x3191fcea3f88f10000,true]`, **`values(bytes12) => address`**: mapping of who set each value in our list according to each value's index, **`owner() => address`**: ie `0x000000...`, **`authority() => address`**: ie `0x8e2a84...`
+
+### Events
+ - `LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
 
 ## MKR Medianizer: [0x99041f808d598b782d5a3e498681c2452a31da08](https://etherscan.io/address/0x99041f808d598b782d5a3e498681c2452a31da08)
 
