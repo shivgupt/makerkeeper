@@ -32,5 +32,20 @@
 
 ## Tub: [0x448a5065aebb8e423f0896e6c5d525c040f59af3](https://etherscan.io/address/0x448a5065aebb8e423f0896e6c5d525c040f59af3)
 
+### Calls/Reads/Properties:
+**`safe(bytes32 ) => bool`**, **`tag() => uint`**: collateral price ref per skr, **`ask(uint wad) => uint`**: collateral token per skr
+
+### Sends/Writes:
+**`lock(bytes32 , uint )`**: transfers collateral from owner to system, **`draw(bytes32 , uint )`**: mints new DAI for owner of CDP, **`free(bytes32 , uint )`**: reclaim collateral, **`wipe(bytes32 , uint )`**: return DAI and reduce debt issued, **`shut(bytes32 )`**: closes the CDP account, **`bite(bytes32 )**`: trigger liquidation 
+
+### Events:
+**`Mint(address indexed , uint )`**, **`Burn(address indexed , uint )`**, **`LogNewCup(address indexed , bytes32 )`**, **`event LogNewCup(address indexed , bytes32 )`**: creates new cdp
+
 ## Vox: [0x9b0f70df76165442ca6092939132bbaea77f2d7a](https://etherscan.io/address/0x9b0f70df76165442ca6092939132bbaea77f2d7a)
+
+## Glossary
+ - Urn: Data record for CDP
+ - Ilk: Data record for CDP type
+ 
+
 
