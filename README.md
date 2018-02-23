@@ -1,9 +1,6 @@
 
 # MakerDAO Cheat Sheet
 
-### Key:
-**`methodName(arg1,arg2) => returnValue`** description of this method; ie specifies the return value; eg specifies one possible example of a return value
-
 
 
 ## WETH: [0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2](https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2)
@@ -11,20 +8,13 @@
 Wrapped ETH; an ERC20 token that is exchangeable 1:1 with Ether. Only exists to provide standard ERC20 methods to Ethereum's native currency.
 
 ### Calls/Reads:
-**`name() => string`**: ie Wrapped Ether, **`totalSupply() => utin256`**: eg 79125209199163249042502, **`decimals() => uint8`**: ie 18, **`symbol() => string`**: ie WETH, **`balanceOf(address) => uint256`**: WETH owned by given address, **`allowance(address,address) => utin256`**: how many tokens owned by address 1 can be spent by address 2
+**`name`**`() => string`, **`totalSupply`**`() => uint256`, **`decimals`**`() => uint8`, **`symbol`**`() => string`, **`balanceOf`**`(address) => uint256`, **`allowance`**`(address,address) => uint256`: how many tokens owned by address 1 can be spent by address 2
 
 ### Sends/Writes:
- - `deposit()`: send ETH to this method to receive the equivalent amount of WETH
- - `withdraw(uint wad)`: destroy `wad` WETH and receive the equivalent amount of ETH
- - `approve(address guy, uint wad)`: permit `guy` to spend up to `wad` of the sender's WETH balance
- - `transfer(address dst, uint wad)`: transfer `wad` WETH from the sender's account to `dst`
- - `transferFrom(address src, address dst, uint wad)`: transfer `wad` WETH from `src` to `dst`
+**`approve`**`(address guy, uint wad) => bool`: permit `guy` to spend up to `wad` of the sender's WETH balance, **`deposit`**`() => null`: send ETH to this method to receive the equivalent amount of WETH, **`transfer`**`(address dst, uint wad) => bool`: transfer `wad` WETH from the sender's account to `dst`, **`transferFrom`**`(address src, address dst, uint wad) => bool`: transfer `wad` WETH from `src` to `dst`, **`withdraw`**`(uint wad) => null`: destroy `wad` WETH and receive the equivalent amount of ETH
 
 ### Events
- - `Approval(address indexed src, address indexed guy, uint wad)`
- - `Transfer(address indexed src, address indexed dst, uint wad)`
- - `Deposit(address indexed dst, uint wad)`
- - `Withdrawal(address indexed src, uint wad)`
+**`Approval`**`(address indexed src, address indexed guy, uint256 wad)`, **`Transfer`**`(address indexed src, address indexed dst, uint256 wad)`, **`Deposit`**`(address indexed dst, uint256 wad)`, **`Withdrawal`**`(address indexed src, uint256 wad)`
 
 
 
@@ -33,19 +23,13 @@ Wrapped ETH; an ERC20 token that is exchangeable 1:1 with Ether. Only exists to 
 Pooled ETH; an ERC20 token that's exchangeable 1:1 with WETH. This is the collateral that can be locked up in a MakerDAO CDP.
 
 ### Calls/Reads:
-**`name() => bytes32`**: ie `0x506f6f...`, **`totalSupply() => utin256`**: eg 71451293553973233226396, **`decimals() => uint256`**: ie 18, **`stopped() => bool`**: ie false, **`owner() => address`**: ie `0x00000...`, **`symbol() => bytes32`**: ie `0x5045544800..`, **`authority() => address`**: ie `0x315cbb88...`, **`balanceOf(address) => uint256`**: ie PETH owned by given address, **`allowance(address,address) => utin256`**: how many tokens owned by address 1 can be spent by address 2
+**`allowance`**`(address,address) => uint256`: how many tokens owned by arg1 address are allowed to be spent by arg2 address, **`authority`**`() => address`, **`balanceOf`**`(address) => uint256`, **`decimals`**`() => uint256`, **`name`**`() => bytes32`, **`owner`**`() => address`, **`stopped`**`() => bool`, **`symbol`**`() => bytes32`, **`totalSupply`**`() => uint256`
 
 ### Sends/Writes:
- - `approve(address guy, uint wad)`: permit `guy` to spend up to `wad` of the sender's PETH balance
- - `transfer(address dst, uint wad)`: transfer `wad` PETH from the sender's account to `dst`
- - `transferFrom(address src, address dst, uint wad)`: transfer `wad` PETH from `src` to `dst`
+**`approve`**`(address) => bool`: allow some address to spend the message sender's PETH, **`approve`**`(address,uint256) => bool`: allow some address to spend up to uint256 of the message sender's PETH, **`move`**`(address,address,uint256) => null`: alias for transferFrom, **`pull`**`(address,uint256) => null`: transfer uint256 PETH from some address to the message sender, **`push`**`(address,uint256) => null`: alias for transfer, **`transfer`**`(address,uint256) => bool`: transfer uint256 PETH from the message sender to some address, **`transferFrom`**`(address,address,uint256) => bool`: transfer uint256 PETH from arg1 address to arg2 address
 
 ### Events
- - `LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
- - `Approval(address indexed src, address indexed guy, uint wad)`
- - `Transfer(address indexed src, address indexed dst, uint wad)`
- - `Mint(address indexed guy, uint wad)`
- - `Burn(address indexed guy, uint wad)`
+**`Approval`**`(address indexed src, address indexed guy, uint256 wad)`, **`Burn`**`(address indexed guy, uint256 wad)`, **`LogNote`**`(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint256 wad, bytes fax)`, **`Mint`**`(address indexed guy, uint wad)`, **`Transfer`**`(address indexed src, address indexed dst, uint256 wad)`
 
 
 
@@ -54,18 +38,13 @@ Pooled ETH; an ERC20 token that's exchangeable 1:1 with WETH. This is the collat
 MakerDAO governance token; an ERC20 token that's used to pay the MakerDAO stability/governance fees. Holders may also have voting rights in some decisions eg setting the stability fee.
 
 ### Calls/Reads:
-**`name() => bytes32`**: ie `0x4d616b...`, **`totalSupply() => utin256`**: eg 1000000000000000000000000, **`decimals() => uint256`**: ie 18, **`stopped() => bool`**: ie false, **`owner() => address`**: ie `0x7bb0b0...`, **`symbol() => bytes32`**: ie `0x4d4b5200...`, **`authority() => address`**: ie `0x000000...`, **`balanceOf(address) => uint256`**: ie MKR owned by given address, **`allowance(address,address) => utin256`**: how many tokens owned by address 1 can be spent by address 2
+**`allowance`**`(address,address) => uint256`: how many tokens owned by arg1 address are allowed to be spent by arg2 address, **`authority`**`() => address`, **`balanceOf`**`(address) => uint256`, **`decimals`**`() => uint256`, **`name`**`() => bytes32`, **`owner`**`() => address`, **`stopped`**`() => bool`, **`symbol`**`() => bytes32`, **`totalSupply`**`() => uint256`
 
 ### Sends/Writes:
- - `approve(address guy, uint wad)`: permit `guy` to spend up to `wad` of the sender's MKR balance
- - `transfer(address dst, uint wad)`: transfer `wad` MKR from the sender's account to `dst`
- - `transferFrom(address src, address dst, uint wad)`: transfer `wad` MKR from `src` to `dst`
+**`approve`**`(address) => bool`: allow some address to spend the message sender's MKR, **`approve`**`(address,uint256) => bool`: allow some address to spend up to uint256 of the message sender's MKR, **`move`**`(address,address,uint256) => null`: alias for transferFrom, **`pull`**`(address,uint256) => null`: transfer uint256 MKR from some address to the message sender, **`push`**`(address,uint256) => null`: alias for transfer, **`transfer`**`(address,uint256) => bool`: transfer uint256 MKR from the message sender to some address, **`transferFrom`**`(address,address,uint256) => bool`: transfer uint256 MKR from arg1 address to arg2 address
 
 ### Events
- - `Approval(address indexed src, address indexed guy, uint wad)`
- - `Transfer(address indexed src, address indexed dst, uint wad)`
- - `Mint(address indexed guy, uint wad)`
- - `Burn(address indexed guy, uint wad)`
+**`Approval`**`(address indexed owner, address indexed guy, uint256 wad)`, **`Burn`**`(address indexed guy, uint256 wad)`, **`LogNote`**`(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint256 wad, bytes fax)`, **`Mint`**`(address indexed guy, uint wad)`, **`Transfer`**`(address indexed owner, address indexed dst, uint256 wad)`
 
 
 
@@ -74,18 +53,13 @@ MakerDAO governance token; an ERC20 token that's used to pay the MakerDAO stabil
 DAI stable coin; an ERC20 token that's pegged to the USD. Can be minted/borrowed after locking up sufficient collateral, used to pay off debt & unlock collateral.
 
 ### Calls/Reads:
-**`name() => bytes32`**: ie `0x446169...`, **`totalSupply() => utin256`**: eg 17667203999011429735037281, **`decimals() => uint256`**: ie 18, **`stopped() => bool`**: ie false, **`owner() => address`**: ie `0x00000...`, **`symbol() => bytes32`**: ie `0x444149000..`, **`authority() => address`**: ie `0x315cbb88...`, **`balanceOf(address) => uint256`**: ie DAI owned by given address, **`allowance(address,address) => utin256`**: how many tokens owned by address 1 can be spent by address 2
+**`allowance`**`(address,address) => uint256`: how many tokens owned by arg1 address are allowed to be spent by arg2 address, **`authority`**`() => address`, **`balanceOf`**`(address) => uint256`, **`decimals`**`() => uint256`, **`name`**`() => bytes32`, **`owner`**`() => address`, **`stopped`**`() => bool`, **`symbol`**`() => bytes32`, **`totalSupply`**`() => uint256`
 
 ### Sends/Writes:
- - `approve(address guy, uint wad)`: permit `guy` to spend up to `wad` of the sender's MKR balance
- - `transfer(address dst, uint wad)`: transfer `wad` MKR from the sender's account to `dst`
- - `transferFrom(address src, address dst, uint wad)`: transfer `wad` MKR from `src` to `dst`
+**`approve`**`(address) => bool`: allow some address to spend the message sender's DAI, **`approve`**`(address,uint256) => bool`: allow some address to spend up to uint256 of the message sender's DAI, **`move`**`(address,address,uint256) => null`: alias for transferFrom, **`pull`**`(address,uint256) => null`: transfer uint256 DAI from some address to the message sender, **`push`**`(address,uint256) => null`: alias for transfer, **`transfer`**`(address,uint256) => bool`: transfer uint256 DAI from the message sender to some address, **`transferFrom`**`(address,address,uint256) => bool`: transfer uint256 DAI from arg1 address to arg2 address
 
 ### Events
- - `Approval(address indexed src, address indexed guy, uint wad)`
- - `Transfer(address indexed src, address indexed dst, uint wad)`
- - `Mint(address indexed guy, uint wad)`
- - `Burn(address indexed guy, uint wad)`
+**`Approval`**`(address indexed src, address indexed guy, uint256 wad)`, **`Burn`**`(address indexed guy, uint256 wad)`, **`LogNote`**`(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint256 wad, bytes fax)`, **`Mint`**`(address indexed guy, uint wad)`, **`Transfer`**`(address indexed src, address indexed dst, uint256 wad)`
 
 
 ## Eth Medianizer: [0x729d19f657bd0614b4985cf1d82531c67569197b](https://etherscan.io/address/0x729d19f657bd0614b4985cf1d82531c67569197b)
@@ -93,7 +67,25 @@ DAI stable coin; an ERC20 token that's pegged to the USD. Can be minted/borrowed
 Saves a list of ETH market prices & calculates their median.
 
 ### Calls/Reads:
-**`compute() => [bytes21,bool]`**: compute & save the median of submitted market price values eg `[0x3191fcea3f88f10000,true]`, **`indexes(address) => bytes12`**: mapping of submitted market prices according to who submitted them, **`next() => bytes12`**: the next position in our list of values that will be set ie 16, **`min() => uint96`**: the smallest set position in our list of values ie 7, **`read() => bytes32`**: returns the latest market price iff it is set eg `0x3191fcea3f88f10000`, **`peek() => [bytes32,bool]`**: return the latest market and whether or not it is set eg `[0x3191fcea3f88f10000,true]`, **`values(bytes12) => address`**: mapping of who set each value in our list according to each value's index, **`owner() => address`**: ie `0x000000...`, **`authority() => address`**: ie `0x8e2a84...`
+**`authority`**`() => address`
+**`compute`**`() => [bytes32,bool]`
+**`indexes`**`(address) => bytes12`
+**`min`**`() => uint96`
+**`next`**`() => bytes12`
+**`owner`**`() => address`
+**`peek`**`() => [byes32,bool]`
+**`read`**`() => bytes32`: returns the latest market price if it's been set
+**`values`**`(bytes12) => address`
+
+### Sends/Writes:
+**`poke`**`() => null`
+**`poke`**`(bytes32) => null`
+**`set`**`(address) => null`
+**`set`**`(bytes,address) => null`
+**`setMin`**`(uint96) => null`
+**`setNext`**`(bytes12) => null`
+**`unset`**`(address) => null`
+**`unset`**`(bytes12) => null`
 
 ### Events
  - `LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
