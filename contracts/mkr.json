@@ -3,8 +3,8 @@
   "abi": [
     {"inputs":[{"name":"symbol_","type":"bytes32"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},
 
-    {"name":"authority","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"allowance","constant":true,"inputs":[{"name":"src","type":"address"},{"name":"guy","type":"address"}],"outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+    {"name":"authority","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"balanceOf","constant":true,"inputs":[{"name":"src","type":"address"}],"outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"decimals","constant":true,"inputs":[],"outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"name","constant":true,"inputs":[],"outputs":[{"name":"","type":"bytes32"}],"payable":false,"stateMutability":"view","type":"function"},
@@ -20,8 +20,8 @@
     {"name":"mint","constant":false,"inputs":[{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"mint","constant":false,"inputs":[{"name":"guy","type":"address"},{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"move","constant":false,"inputs":[{"name":"src","type":"address"},{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
-    {"name":"push","constant":false,"inputs":[{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"pull","constant":false,"inputs":[{"name":"src","type":"address"},{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
+    {"name":"push","constant":false,"inputs":[{"name":"dst","type":"address"},{"name":"wad","type":"uint256"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"setAuthority","constant":false,"inputs":[{"name":"authority_","type":"address"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"setName","constant":false,"inputs":[{"name":"name_","type":"bytes32"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
     {"name":"setOwner","constant":false,"inputs":[{"name":"owner_","type":"address"}],"outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},
@@ -32,10 +32,10 @@
 
     {"name":"Approval","anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"type":"event"},
     {"name":"Burn","anonymous":false,"inputs":[{"indexed":true,"name":"guy","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"type":"event"},
-    {"name":"Mint","anonymous":false,"inputs":[{"indexed":true,"name":"guy","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"type":"event"},
+    {"name":"LogNote","anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"guy","type":"address"},{"indexed":true,"name":"foo","type":"bytes32"},{"indexed":true,"name":"bar","type":"bytes32"},{"indexed":false,"name":"wad","type":"uint256"},{"indexed":false,"name":"fax","type":"bytes"}],"type":"event"},
     {"name":"LogSetAuthority","anonymous":false,"inputs":[{"indexed":true,"name":"authority","type":"address"}],"type":"event"},
     {"name":"LogSetOwner","anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"}],"type":"event"},
-    {"name":"LogNote","anonymous":true,"inputs":[{"indexed":true,"name":"sig","type":"bytes4"},{"indexed":true,"name":"guy","type":"address"},{"indexed":true,"name":"foo","type":"bytes32"},{"indexed":true,"name":"bar","type":"bytes32"},{"indexed":false,"name":"wad","type":"uint256"},{"indexed":false,"name":"fax","type":"bytes"}],"type":"event"},
+    {"name":"Mint","anonymous":false,"inputs":[{"indexed":true,"name":"guy","type":"address"},{"indexed":false,"name":"wad","type":"uint256"}],"type":"event"},
     {"name":"Transfer","anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"type":"event"}
   ]
 }

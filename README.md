@@ -67,40 +67,55 @@ DAI stable coin; an ERC20 token that's pegged to the USD. Can be minted/borrowed
 Saves a list of ETH market prices & calculates their median.
 
 ### Calls/Reads:
-**`authority`**`() => address`
-**`compute`**`() => [bytes32,bool]`
-**`indexes`**`(address) => bytes12`
-**`min`**`() => uint96`
-**`next`**`() => bytes12`
-**`owner`**`() => address`
-**`peek`**`() => [byes32,bool]`
-**`read`**`() => bytes32`: returns the latest market price if it's been set
-**`values`**`(bytes12) => address`
+**`authority`**`() => address`, **`compute`**`() => [bytes32,bool]`: compute a new median based on saved values, **`indexes`**`(address) => bytes12`: to find out which price some authorized address submitted, **`min`**`() => uint96`, **`next`**`() => bytes12`, **`owner`**`() => address`, **`peek`**`() => [byes32,bool]`: return the last saved computation and whether or not it's still set, **`read`**`() => bytes32`: returns the latest market price if it's been set, **`values`**`(bytes12) => address`
 
 ### Sends/Writes:
-**`poke`**`() => null`
-**`poke`**`(bytes32) => null`
-**`set`**`(address) => null`
-**`set`**`(bytes,address) => null`
-**`setMin`**`(uint96) => null`
-**`setNext`**`(bytes12) => null`
-**`unset`**`(address) => null`
-**`unset`**`(bytes12) => null`
+**`poke`**`() => null`, **`poke`**`(bytes32) => null`, compute and save a new median based on prices set my authorized addresses, **`set`**`(address) => null` **`set`**`(bytes,address) => null`, **`unset`**`(address) => null` **`unset`**`(bytes12) => null`
 
 ### Events
- - `LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
+**`LogNote`**`(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
 
 ## MKR Medianizer: [0x99041f808d598b782d5a3e498681c2452a31da08](https://etherscan.io/address/0x99041f808d598b782d5a3e498681c2452a31da08)
 
 Saves a list of MKR market prices & calculates their median.
 
 ### Calls/Reads:
-**`compute() => [bytes21,bool]`**: ie `[0x3a7319a6ecd20c8000,true]`, **`indexes(address) => bytes12`**: idk, **`next() => bytes12`**: ie 4, **`read() => bytes32`**: ie `0x3a7319a6ecd20c8000`, **`peek() => [bytes32,bool]`**: ie `[0x3a7319a6ecd20c8000,true]`, **`values(bytes12) => address`**: idk, **`owner() => address`**: ie `0x000000...`, **`authority() => address`**: ie `0x8e2a84...`, **`min() => uint96`**: ie 1
+**`authority`**`() => address`, **`compute`**`() => [bytes32,bool]`: compute a new median based on saved values, **`indexes`**`(address) => bytes12`: to find out which price some authorized address submitted, **`min`**`() => uint96`, **`next`**`() => bytes12`, **`owner`**`() => address`, **`peek`**`() => [byes32,bool]`: return the last saved computation and whether or not it's still set, **`read`**`() => bytes32`: returns the latest market price if it's been set, **`values`**`(bytes12) => address`
+
+### Sends/Writes:
+**`poke`**`() => null`, **`poke`**`(bytes32) => null`, compute and save a new median based on prices set my authorized addresses, **`set`**`(address) => null` **`set`**`(bytes,address) => null`, **`unset`**`(address) => null` **`unset`**`(bytes12) => null`
 
 ### Events
-**`LogNote(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`**
+**`LogNote`**`(bytes4 indexed sig, address indexed guy, bytes32 indexed foo, bytes32 indexed bar, uint wad, bytes fax)`
+**`LogValue`**`(bytes32 val)`
 
 ## Tap: [0xbda109309f9fafa6dd6a9cb9f1df4085b27ee8ef](https://etherscan.io/address/0xbda109309f9fafa6dd6a9cb9f1df4085b27ee8ef)
+
+## Calls/Reads:
+**`authority`**`() => address`
+**`fix`**`() => uint256`
+**`joy`**`() => uint256`
+**`owner`**`() => uint256`
+**`sai`**`() => address`
+**`sin`**`() => address`
+**`skr`**`() => address`
+**`tub`**`() => address`
+**`woe`**`() => uint256`
+
+## Sends/Writes:
+**`ask`**`(uint256) => uint256`
+**`bid`**`(uint256) => uint256`
+**`boom`**`(uint256) => null`
+**`bust`**`(uint256) => null`
+**`cage`**`(uint256) => null`
+**`cash`**`(uint256) => null`
+**`heal`**`() => null`
+**`mock`**`(uint256) => null`
+**`mold`**`(bytes32) => null`
+**`s2s`**`() => uint256`
+**`vent`**`() => null`
+
+
 
 ## Top: [0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3](https://etherscan.io/address/0x9b0ccf7c8994e19f39b2b4cf708e0a7df65fa8a3)
 
