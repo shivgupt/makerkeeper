@@ -5,7 +5,7 @@ module.exports = {
 
     externals: ['electron'],
 
-    entry: './src/web3.js',
+    entry: './src/mk.js',
 
     output: {
         path: path.join(__dirname, '../build'),
