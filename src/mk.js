@@ -101,7 +101,12 @@ const wethToPeth = (amt) => {
 
 const pethToWeth = (amt) => {}
 
-const openCDP = () => {}
+const openCDP = () => {
+    sendTx({
+        to: mk.tub.options.address,
+        data: mk.tub.methods.open().encodeABI()
+    })
+}
 
 const lockPeth = (peth) => {}
 // pc = percent colateralization
@@ -127,5 +132,6 @@ const wipeDai = (pc) => {}
 const wind = () => {}
 const unwind = () => {}
 
+openCDP()
 //wethToPeth(web3.utils.toWei("0.001", 'ether'))
 //ethToWeth( web3.utils.toWei('0.01', "ether"))
