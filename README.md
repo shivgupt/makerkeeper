@@ -1,7 +1,15 @@
 
 # MakerDAO Cheat Sheet
 
+## Oasis: [0x14FBCA95be7e99C15Cc2996c6C9d841e54B79425](https://etherscan.io/address/0x14fbca95be7e99c15cc2996c6c9d841e54b79425)
 
+Oasis: decentralized exchange 
+
+### Calls/Reads:
+**`_best`**`(address, address) => uint256`: best offer to sell ERC20 token at address 1 to buy ERC20 token at address 2, **`offers`**`(uint256) => uint256, address, uint256, address, address, uint64`: pay_amt of token address 1 to get buy_amt of token address 2 offered by address 3 owner at timestamp
+
+### Sends/Writes:
+**`buy`**`(uint256, uint256)`: from offer ID buy 
 
 ## WETH: [0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2](https://etherscan.io/address/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2)
 
