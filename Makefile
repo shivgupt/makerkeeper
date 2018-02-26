@@ -1,12 +1,17 @@
 # Variable
 
 VPATH=src:ops:build
-webpack=node_modules/.bin/webpack
+
 me=$(shell whoami)
 version=latest
 remote=bonet
+
+webpack=node_modules/.bin/webpack
+
 src=$(shell find src -type f -name "*.js")
 contracts=$(shell find contracts -type f -name "*.json")
+
+contracts=$(shell mkdir -p build)
 
 # Rules
 

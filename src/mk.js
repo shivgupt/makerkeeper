@@ -14,6 +14,12 @@ mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(736), 64)).call({},(err,
 ////////////////////////////////////////
 // Utility Function
 
+// print one last message with our dying breath and then exit
+const die = (msg) => {
+  console.error(`${new Date().toISOString()} Fatal: ${msg}`)
+  process.exit(1)
+}
+
 // spender & toSpend are both strings eg 'tub' and 'peth'
 const approveSpending = (spender, toSpend) => {
     return (mk[toSpend].methods.allowance(process.env.ETH_ADDRESS, mk[spender].options.address).call({}).then((allowance) => {
@@ -27,38 +33,39 @@ const approveSpending = (spender, toSpend) => {
         } else {
             return (true)
         }
-    }))
+    }).catch(die))
 }
 
 const sendTx = (tx) => {
+
     tx.from = process.env.ETH_ADDRESS
 
-    return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, "utf8")).then( (result) => {
-        console.log(JSON.stringify(tx))
+    return (web3.eth.estimateGas(tx).then(gas=>{
 
-        const sentTx = web3.eth.sendTransaction(tx)
+      tx.gas = gas
 
-        sentTx.on('transactionHash', (hash) => {
-            console.log(`sent transaction: ${hash}`)
-        })
+      return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, "utf8")).then( (result) => {
+          console.log(`${new Date().toISOString()} Sending transaction: ${JSON.stringify(tx)}`)
 
-        sentTx.on('receipt', (receipt) => {
-            console.log(`transaction confirmed: ${JSON.stringify(receipt)}`)
-        })
+          // send the transaction
+          return web3.eth.sendTransaction(tx)
+          .once('transactionHash', (hash) => { console.log(`${new Date().toISOString()} Transaction Sent: ${hash}`) })
+          .once('receipt', (reciept) => { console.log(`${new Date().toISOString()} Transaction Receipt: ${JSON.stringify(receipt)}`) })
+          .on('error', die)
+          .then((receipt) => {
+              return (receipt)
+          })
 
-        sentTx.on('error', (err) => {
-            console.error(err)
-        })
-        return (sentTx)
-    }))
+      }).catch(die))
 
+    }).catch(die))
 }
 
 const getEthPrice = () => {
     return (mk.tub.methods.tag().call({}).then((result) => {
         console.log(JSON,stringify(result))
         return (result)
-    }).catch(console.error))
+    }).catch(die))
 }
 
 // Get best offer from market 
@@ -70,8 +77,8 @@ const getOffer = (sell, buy) => {
             offer.ID = offerID
             return (offer)
 
-        }).catch(console.error))
-    }).catch(console.error))
+        }).catch(die))
+    }).catch(die))
 }
 
 
@@ -84,13 +91,13 @@ const ethToWeth = (amt) => {
         value: amt,
         data: mk.weth.methods.deposit().encodeABI()
     }
-    sendTx(tx)
+    return sendTx(tx)
 
 }
 
 const wethToPeth = (amt) => {
-    approveSpending('tub', 'weth').then(() => {
-        sendTx({
+    return approveSpending('tub', 'weth').then(() => {
+        return sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.join(amt).encodeABI()
         })
@@ -132,6 +139,9 @@ const wipeDai = (pc) => {}
 const wind = () => {}
 const unwind = () => {}
 
+/*
 openCDP()
-//wethToPeth(web3.utils.toWei("0.001", 'ether'))
-//ethToWeth( web3.utils.toWei('0.01', "ether"))
+ethToWeth( web3.utils.toWei('0.001', 'ether')).then(()=> {
+  wethToPeth(web3.utils.toWei('0.001', 'ether'))
+})
+*/
