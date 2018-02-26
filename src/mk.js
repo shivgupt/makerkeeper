@@ -2,6 +2,7 @@ import { mk, web3} from "./web3.js"
 import fs from "fs"
 
 const BN = web3.utils.BN
+const maxINT = new BN( "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16)
 
 /*
 mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(736), 64)).call({},(err,res)=>{
@@ -10,23 +11,46 @@ mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(736), 64)).call({},(err,
 })
 */
 
+////////////////////////////////////////
 // Utility Function
+
+// spender & toSpend are both strings eg 'tub' and 'peth'
+const approveSpending = (spender, toSpend) => {
+    return (mk[toSpend].methods.allowance(process.env.ETH_ADDRESS, mk[spender].options.address).call({}).then((allowance) => {
+        if (Number(allowance) === 0) {
+            const tx = {
+                to: mk[toSpend].options.address,
+                data: mk[toSpend].methods.approve(mk[spender].options.address, maxINT).encodeABI()
+            }
+            console.log(`Approving ${spender} to spend ${toSpend}: ${JSON.stringify(tx)}`)
+            return (sendTx(tx))
+        } else {
+            return (true)
+        }
+    }))
+}
+
 const sendTx = (tx) => {
     tx.from = process.env.ETH_ADDRESS
 
-    web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, "utf8")).then( (result) => {
-        console.log(JSON.stringify(tx),result)
-        web3.eth.sendTransaction(tx)
-        .on('transactionHash', (hash) => {
+    return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, "utf8")).then( (result) => {
+        console.log(JSON.stringify(tx))
+
+        const sentTx = web3.eth.sendTransaction(tx)
+
+        sentTx.on('transactionHash', (hash) => {
             console.log(`sent transaction: ${hash}`)
         })
-        .on('receipt', (receipt) => {
+
+        sentTx.on('receipt', (receipt) => {
             console.log(`transaction confirmed: ${JSON.stringify(receipt)}`)
         })
-        .on('error', (err) => {
+
+        sentTx.on('error', (err) => {
             console.error(err)
         })
-    })
+        return (sentTx)
+    }))
 
 }
 
@@ -51,6 +75,7 @@ const getOffer = (sell, buy) => {
 }
 
 
+////////////////////////////////////////
 // Exchange Functions
 
 const ethToWeth = (amt) => {
@@ -63,14 +88,20 @@ const ethToWeth = (amt) => {
 
 }
 
+const wethToPeth = (amt) => {
+    approveSpending('tub', 'weth').then(() => {
+        sendTx({
+            to: mk.tub.options.address,
+            data: mk.tub.methods.join(amt).encodeABI()
+        })
+    })
+}
 
 // TODO
 
-const setAllowances = () => {}
-const openCDP = () => {}
-
-const wethToPeth = (amt) => {}
 const pethToWeth = (amt) => {}
+
+const openCDP = () => {}
 
 const lockPeth = (peth) => {}
 // pc = percent colateralization
@@ -96,4 +127,5 @@ const wipeDai = (pc) => {}
 const wind = () => {}
 const unwind = () => {}
 
-ethToWeth( web3.utils.toWei('0.01', "ether"))
+//wethToPeth(web3.utils.toWei("0.001", 'ether'))
+//ethToWeth( web3.utils.toWei('0.01', "ether"))
