@@ -13,6 +13,24 @@ mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(736), 64)).call({},(err,
 
 ////////////////////////////////////////
 // Utility Function
+const findMyCDP = () => {
+
+    return (mk.tub.methods.cupi().call({}).then((totalCDP) => {
+        const cdpPromises = []
+        for (let i = 0; i <= totalCDP; i++){
+                cdpPromises.push( mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(i),64)).call({}))
+        }
+        return (Promise.all(cdpPromises).then((cdps) => {
+            for (let i = 0; i <= totalCDP; i++){
+//                console.log(JSON.stringify(cdps[i]))
+                if ( cdps[i].lad.toLowerCase() === process.env.ETH_ADDRESS.toLowerCase()){
+                    cdps[i].ID = i
+                    return cdps[i]
+                }
+            }
+        }))
+    }))
+}
 
 // print one last message with our dying breath and then exit
 const die = (msg) => {
@@ -138,6 +156,10 @@ const wipeDai = (pc) => {}
 
 const wind = () => {}
 const unwind = () => {}
+
+findMyCDP().then((cdp) => {
+    console.log(JSON.stringify(cdp))
+})
 
 /*
 openCDP()
