@@ -8,9 +8,10 @@ import voxData from '../contracts/vox'
 import oasisData from '../contracts/oasis'
 import wethData from '../contracts/weth'
 import pethData from '../contracts/peth'
+import fs from 'fs'
 
 const web3 = new Web3(new Web3.providers.IpcProvider(
-    '/tmp/ipc/geth.ipc',
+    process.env.ETH_PROVIDER,
     new net.Socket()
 ))
 

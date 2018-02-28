@@ -1,8 +1,8 @@
-import { mk, web3} from "./web3.js"
-import fs from "fs"
+import { mk, web3} from './web3.js'
+import fs from 'fs'
 
 const BN = web3.utils.BN
-const maxINT = new BN( "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16)
+const maxINT = new BN( 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 16)
 
 /*
 mk.tub.methods.cups(web3.utils.padLeft(web3.utils.toHex(736), 64)).call({},(err,res)=>{
@@ -56,26 +56,24 @@ const approveSpending = (spender, toSpend) => {
 
 const sendTx = (tx) => {
 
-    tx.from = process.env.ETH_ADDRESS
+    tx.from = process.env.ETH_ADDRESS.toLowerCase()
 
     return (web3.eth.estimateGas(tx).then(gas=>{
+        tx.gas = gas
 
-      tx.gas = gas
+        return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, 'utf8')).then( (result) => {
+            console.log(`${new Date().toISOString()} Sending transaction: ${JSON.stringify(tx)}`)
 
-      return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, "utf8")).then( (result) => {
-          console.log(`${new Date().toISOString()} Sending transaction: ${JSON.stringify(tx)}`)
-
-          // send the transaction
-          return web3.eth.sendTransaction(tx)
-          .once('transactionHash', (hash) => { console.log(`${new Date().toISOString()} Transaction Sent: ${hash}`) })
-          .once('receipt', (reciept) => { console.log(`${new Date().toISOString()} Transaction Receipt: ${JSON.stringify(receipt)}`) })
-          .on('error', die)
-          .then((receipt) => {
+            // send the transaction
+            return web3.eth.sendTransaction(tx)
+            .once('transactionHash', (hash) => { console.log(`${new Date().toISOString()} Transaction Sent: ${hash}`) })
+            .once('receipt', (reciept) => { console.log(`${new Date().toISOString()} Transaction Receipt: ${JSON.stringify(receipt)}`) })
+            .on('error', die)
+            .then((receipt) => {
               return (receipt)
-          })
+            })
 
-      }).catch(die))
-
+        }).catch(die))
     }).catch(die))
 }
 
@@ -104,12 +102,11 @@ const getOffer = (sell, buy) => {
 // Exchange Functions
 
 const ethToWeth = (amt) => {
-    const tx = {
+    return sendTx({
         to: mk.weth.options.address,
         value: amt,
         data: mk.weth.methods.deposit().encodeABI()
-    }
-    return sendTx(tx)
+    })
 
 }
 
@@ -133,7 +130,19 @@ const openCDP = () => {
     })
 }
 
-const lockPeth = (peth) => {}
+const lockPeth = (peth) => {
+    if (new BN(peth).lt(new BN(web3.utils.toWei('0.005','ether'))))
+    {
+        console.log('Insufficient amount')
+    }
+    return (findMyCDP().then((cdp) => {
+        console.log(JSON.stringify(cdp))
+        sendTx({
+            to: mk.tub.options.address,
+            data: mk.tub.methods.lock(web3.utils.padLeft(web3.utils.toHex(cdp.ID), 64), peth ).encodeABI()
+        })
+    }))
+}
 // pc = percent colateralization
 const drawDai = (pc) => {}
 
@@ -154,16 +163,20 @@ const wethToDai = (weth) => {
 const freePeth = (peth) => {}
 const wipeDai = (pc) => {}
 
+////////////////////////////////////////
+// End User Function
+////////////////////////////////////////
+
+const load = (amt) => {
+    console.log('About to convert eth to weth')
+    ethToWeth(amt).then(()=> {
+        console.log('About to convert weth to peth')
+        wethToPeth(amt)
+    })
+    //lockPeth( web3.utils.toWei('0.001','ether'))
+}
+
 const wind = () => {}
 const unwind = () => {}
 
-findMyCDP().then((cdp) => {
-    console.log(JSON.stringify(cdp))
-})
-
-/*
-openCDP()
-ethToWeth( web3.utils.toWei('0.001', 'ether')).then(()=> {
-  wethToPeth(web3.utils.toWei('0.001', 'ether'))
-})
-*/
+load(web3.utils.toWei('0.005', 'ether'))
