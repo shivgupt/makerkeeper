@@ -27,8 +27,8 @@ const getOffer = (sell, buy) => {
 
 // buy (string): name of token being purchased 
 // pay (string): name of token being exchanged
-// amt (BN): units being purcahsed
-const exchange = (buy, pay, amt) => {
+// amt (BN): units being exchanged
+const exchange = (pay, buy, amt) => {
 
     return (getOffer(tk[buy].options.address, tk[pay].options.address).then((offer) => {
         log(JSON.stringify(offer))
@@ -37,7 +37,9 @@ const exchange = (buy, pay, amt) => {
         return (utils.sendTx({
             to: tk.oasis.options.address,
             data: tk.oasis.methods.buy(offer.id, quantity).encodeABI()
-        }))
+        }).then(()=>{
+            return (quantity)
+        }).catch(die))
     }).catch(die))
 }
 
@@ -48,56 +50,64 @@ const exchange = (buy, pay, amt) => {
 // ex for exchange
 const ex = {}
 
-// amt (BN): units of eth being converted
-ex.ethToWeth = (amt) => {
+// eth (BN): units of eth being converted
+ex.ethToWeth = (eth) => {
+    log(`About to turn ${eth} eth into weth`)
     return utils.sendTx({
         to: tk.weth.options.address,
-        value: amt,
+        value: eth,
         data: tk.weth.methods.deposit().encodeABI()
     })
 }
 
-// amt (BN): units of weth being converted
-ex.wethToeth = (amt) => {
+// weth (BN): units of weth being converted
+ex.wethToeth = (weth) => {
+    log(`About to convert ${weth} weth to eth`)
     return utils.sendTx({
         to: tk.weth.options.address,
-        data: tk.weth.methods.withdraw(amt).encodeABI()
+        data: tk.weth.methods.withdraw(weth).encodeABI()
     })
 }
 
-// amt (BN): units of dai being converted
+// dai (BN): units of dai being converted
 ex.daiToWeth = (dai) => {
-
+    log(`About to convert ${dai} dai to weth`)
     return (utils.approveSpending(tk.oasis, tk.dai).then(() => {
-        return exchange('weth', 'dai', dai)
+        return exchange('dai', 'weth', dai)
     }).catch(die))
 }
 
-// amt (BN): units of weth being converted
+// weth (BN): units of weth being converted
 ex.wethToDai = (weth) => {
-
+    log(`About to convert ${weth} weth to dai`)
     return (utils.approveSpending(tk.oasis, tk.weth).then(() => {
-        return exchange('dai', 'weth', weth)
+        return exchange('weth', 'dai', weth)
     }).catch(die))
 }
 
-// amt (BN): units of weth being converted
-ex.wethToPeth = (amt) => {
+// weth (BN): units of weth being converted
+ex.wethToPeth = (weth) => {
+    log(`About to convert ${weth} weth to peth`)
     return utils.approveSpending(mk.tub, tk.weth).then(() => {
         return utils.sendTx({
             to: mk.tub.options.address,
-            data: mk.tub.methods.join(amt).encodeABI()
-        })
+            data: mk.tub.methods.join(weth).encodeABI()
+        }).then((tx) => {
+            return mk.tub.methods.ask(weth).call()
+        }).catch(die)
     }).catch(die)
 }
 
-// amt (BN): units of peth being converted
-ex.pethToWeth = (amt) => {
+// peth (BN): units of peth being converted
+ex.pethToWeth = (peth) => {
+    log(`About to convert ${peth} peth to weth`)
     return utils.approveSpending(mk.tub, tk.peth).then(() => {
         return utils.sendTx({
             to: mk.tub.options.address,
-            data: mk.tub.methods.exit(amt).encodeABI()
-        })
+            data: mk.tub.methods.exit(peth).encodeABI()
+        }).then(() => {
+            return mk.tub.methods.bid(peth).call()
+        }).catch(die)
     }).catch(die)
 }
 

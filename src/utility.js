@@ -89,18 +89,19 @@ utils.findMyCDP = () => {
 
 utils.sendTx = (tx) => {
 
-    log(JSON.stringify(tx))
     tx.from = process.env.ETH_ADDRESS.toLowerCase()
-
     return (getGasPrice().then((gasPrice) => {
         tx.gasPrice = gasPrice
 
         return (web3.eth.estimateGas(tx).then(gas=>{
             tx.gas = gas * 2
-            log(JSON.stringify(tx))
-
-            return(tx) // TEMP
-    /*
+/*
+            // short circuit & don't actually send a transaction
+            return(new Promise((resolve, reject) => {
+                log('ping')
+                resolve(tx)
+            }))
+*/
             return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, 'utf8')).then( (result) => {
                 log(`Sending transaction: ${JSON.stringify(tx)}`)
 
@@ -108,11 +109,10 @@ utils.sendTx = (tx) => {
                 return web3.eth.sendTransaction(tx)
                 .once('transactionHash', (hash) => { log(`Transaction Sent: ${hash}`) })
                 .once('receipt', (reciept) => { log(`Transaction Receipt: ${JSON.stringify(receipt)}`) })
-                .then((receipt) => {
-                  return (receipt)
-                }).catch(die)
+                
+
             }).catch(die)) 
-      */    
+
         }).catch(die))
     }).catch(die))
 
