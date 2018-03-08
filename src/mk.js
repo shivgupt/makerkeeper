@@ -9,7 +9,7 @@ import fs from 'fs'
 
 const BN = web3.utils.BN
 const maxINT = new BN( 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 16)
-
+const unit = new BN('1000000000000000000')
 ////////////////////////////////////////
 // Internal utility functions
 ////////////////////////////////////////
@@ -54,7 +54,16 @@ const drawDai = (dai) => {
 
 const wipeDai = (pc) => {}
 
-const freePeth = (peth) => {}
+const freePeth = (peth) => {
+    log(`About to free ${peth} peth from CDP`)
+    return (utils.findMyCDP().then( (cdp) => {
+        //TODO check safe low ratio
+        return (utils.sendTx({
+            to: mk.tub.options.address,
+            data: mk.tub.methods.free(web3.utils.padLeft(web3.utils.toHex(cdp.id), 64), peth).encodeABI()
+        }))
+    }).catch(die))
+}
 
 ////////////////////////////////////////
 // End User Function
@@ -68,7 +77,6 @@ const load = (amt) => {
     }).catch(die)
 }
 
-// TODO Calulate percent colateral to draw 
 // c = (cdp.ink * price)/tlr
 // c = amt of dai to draw; tlr = target liquidity ration to maintain 
 const wind = (amt) => {
@@ -83,12 +91,29 @@ const wind = (amt) => {
 
 const unwind = () => {}
 
-const targetSeeker = (tlr) => {
-    findMyCDP
+// return unit of dai that can be minted while maintaining given ratio
+// ratio = target liquidity ratio
+const safeDraw = (ratio) => {
+    return utils.findMyCDP().then((cdp) => {
+        return mk.tub.methods.tag().call().then((ethPrice) => {
+            return mk.tub.methods.per().call().then((ray) => {
+                return ((new BN(cdp.ink)).mul(new BN(ethPrice)).mul(unit).div(new BN(ratio)).div(new BN(ray)) - (new BN(cdp.art)))
+            }).catch(die)
+        }).catch(die)
+    }).catch(die)
 }
 
+const targetSeeker = (tlr) => {
+}
 
+// return object containing number of steps and step ratio
+const findStep = (slr, tlr) => {
+}
+
+safeDraw(web3.utils.toWei('2.20', 'ether')).then(log)
 //lockPeth(web3.utils.toWei('0.01', 'ether'))
+/*
 load(web3.utils.toWei('0.01', 'ether')).then(() => {
     wind(web3.utils.toWei('5', 'ether'))
 })
+*/
