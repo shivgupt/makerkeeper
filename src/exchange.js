@@ -111,4 +111,12 @@ ex.pethToWeth = (peth) => {
     }).catch(die)
 }
 
+// weth (BN): units of weth being converted to mkr
+ex.wethToMkr = (weth) => {
+    log(`About to convert ${weth} weth to mkr`)
+    return (utils.approveSpending(tk.oasis, tk.weth).then(() => {
+        return exchange('weth', 'mkr', weth)
+    }).catch(die))
+}
+
 export { ex }

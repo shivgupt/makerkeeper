@@ -8,6 +8,7 @@ import voxData from '../contracts/vox'
 import oasisData from '../contracts/oasis'
 import wethData from '../contracts/weth'
 import pethData from '../contracts/peth'
+import mkrData from '../contracts/mkr'
 import fs from 'fs'
 
 const web3 = new Web3(new Web3.providers.IpcProvider(
@@ -28,5 +29,6 @@ tk.oasis = new web3.eth.Contract(oasisData.abi, oasisData.address)
 tk.dai = new web3.eth.Contract(daiData.abi, daiData.address)
 tk.weth = new web3.eth.Contract(wethData.abi, wethData.address)
 tk.peth = new web3.eth.Contract(pethData.abi, pethData.address)
+tk.mkr = new web3.eth.Contract(mkrData.abi, mkrData.address)
 
 export { mk, tk, web3 }
