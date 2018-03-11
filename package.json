@@ -13,6 +13,7 @@
     "babel-loader": "^7.1.2",
     "babel-preset-es2015": "^6.24.1",
     "durand-kerner": "^1.0.0",
+    "pg": "^7.4.1",
     "web3": "^1.0.0-beta.30",
     "webpack": "^3.11.0"
   }

@@ -1,21 +1,85 @@
 #!/bin/bash
 
-[[ -z "`docker service ls -qf name=makerkeeper`" ]] || docker service rm makerkeeper
-
 provider="parity"
-image="`whoami`/makerkeeper:latest"
+image="`whoami`/makerkeeper_node:latest"
+
+[[ -z "`docker service ls -qf name=makerkeeper_node`" ]] || docker service rm makerkeeper_node
+
+if [[ -z "$ETH_ADDRESS" ]] 
+then
+    echo "Please set ETH_ADDRESS"
+    exit
+fi
+
+if [[ -z "`docker secret ls -qf name=makerkeeper_postgres`" ]]
+then
+    head -c30 /dev/urandom | base64 | tr -d '\n\r' | docker secret create makerkeeper_postgres -
+    echo "Postgres secret initialized"
+fi 
 
 docker pull $image
 
-docker service create \
-    --name "makerkeeper" \
-    --mode "global" \
-    --restart-condition "none" \
-    --mount "type=volume,source=ethprovider_ipc,destination=/tmp/ipc" \
-    --env "ETH_ADDRESS=$ETH_ADDRESS" \
-    --env "ETH_PROVIDER=/tmp/ipc/$provider.ipc" \
-    --secret "$ETH_ADDRESS" \
-    --detach \
-    $image
+mkdir -p /tmp/makerkeeper
 
-docker service logs -f makerkeeper
+cat -> /tmp/makerkeeper/docker-compose.yml <<EOF
+version: '3.4'
+
+secrets:
+    makerkeeper_postgres:
+        external: true
+    $ETH_ADDRESS:
+        external: true
+
+volumes:
+    postgres:
+    ethprovider_ipc:
+        external: true
+
+networks:
+    back:
+
+services:
+    node:
+        image: $image
+        deploy:
+            mode: global
+            restart_policy:
+                condition: none
+        depends_on:
+            - db
+        secrets: 
+            - makerkeeper_postgres
+            - $ETH_ADDRESS
+        environment:
+            - ETH_ADDRESS=$ETH_ADDRESS
+            - ETH_PROVIDER=/tmp/ipc/$provider.ipc
+            - PGHOST=db
+            - PGPORT=5432
+            - PGUSER=mk
+            - PGDATABASE=mk
+            - PGPASSFILE=/run/secrets/makerkeeper_postgres
+        volumes:
+            - ethprovider_ipc:/tmp/ipc
+        networks:
+            - back
+
+    db:
+        image: postgres:10
+        deploy:
+            mode: global
+        secrets:
+            - makerkeeper_postgres
+        environment:
+            - POSTGRES_USER=mk
+            - POSTGRES_DB=mk
+            - POSTGRES_PASSWORD_FILE=/run/secrests/makerkeeper_postgres
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        networks:
+            - back
+EOF
+
+docker stack deploy -c /tmp/makerkeeper/docker-compose.yml makerkeeper
+rm /tmp/makerkeeper/docker-compose.yml
+
+docker service logs -f makerkeeper_node

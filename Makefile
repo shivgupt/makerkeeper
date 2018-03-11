@@ -19,12 +19,12 @@ all: makerkeeper-image
 	@true
 
 mk: makerkeeper-image
-	docker push $(me)/makerkeeper:$(version)
+	docker push $(me)/makerkeeper_node:$(version)
 	scp ops/deploy-mk.sh $(remote):~
 	ssh $(remote) ETH_ADDRESS=$$ETH_ADDRESS bash deploy-mk.sh
 	
 makerkeeper-image: mk.bundle.js makerkeeper.Dockerfile
-	docker build -f ops/makerkeeper.Dockerfile -t $(me)/makerkeeper:$(version) -t makerkeeper:$(version) .
+	docker build -f ops/makerkeeper.Dockerfile -t $(me)/makerkeeper_node:$(version) -t makerkeeper_node:$(version) .
 	touch build/makerkeeper-image
 
 mk.bundle.js: node_modules web3.js webpack.config.js $(contracts) $(src)
