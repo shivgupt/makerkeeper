@@ -2,6 +2,7 @@ import { mk, tk, web3} from './web3'
 import { utils } from './utility'
 import { ex } from './exchange'
 import fs from 'fs'
+import roots from 'durand-kerner'
 
 ////////////////////////////////////////
 // Internal global variables
@@ -65,6 +66,41 @@ const freePeth = (peth) => {
     }).catch(die))
 }
 
+// return unit of dai that can be drawn while maintaining tlr
+// tlr = target liquidity ratio
+const safeDraw = (tlr) => {
+    return utils.findMyCDP().then((cdp) => {
+        return mk.tub.methods.tag().call().then((ethPrice) => {
+            return mk.tub.methods.per().call().then((ray) => {
+                return ((new BN(cdp.ink)).mul(new BN(ethPrice)).mul(unit).div(new BN(tlr)).div(new BN(ray)) - (new BN(cdp.art)))
+            }).catch(die)
+        }).catch(die)
+    }).catch(die)
+}
+
+// return object containing number of steps and step ratio (higher than slr) to hit tlr
+// tlr = target liquidity ratio
+// slr = safe low ratio
+const findStep = (slr, tlr) => {
+    const result = {
+        step: 1,
+        ratio: slr
+    }
+    var poly = [(tlr - 1), -1]
+    for ( let i = 1; i < 6; i++){
+        var r = roots(poly)[0]
+        r.sort(function(a, b){return a - b})
+        for (let j = 0; j < r.length; j++){
+            if ( r[j] >= slr ) {
+                result.step = i
+                result.ratio = r[j]
+                return result
+            }
+        }
+        poly.unshift(tlr - 1)
+    }
+}
+
 ////////////////////////////////////////
 // End User Function
 ////////////////////////////////////////
@@ -91,27 +127,21 @@ const wind = (amt) => {
 
 const unwind = () => {}
 
-// return unit of dai that can be minted while maintaining given ratio
-// ratio = target liquidity ratio
-const safeDraw = (ratio) => {
-    return utils.findMyCDP().then((cdp) => {
-        return mk.tub.methods.tag().call().then((ethPrice) => {
-            return mk.tub.methods.per().call().then((ray) => {
-                return ((new BN(cdp.ink)).mul(new BN(ethPrice)).mul(unit).div(new BN(ratio)).div(new BN(ray)) - (new BN(cdp.art)))
-            }).catch(die)
-        }).catch(die)
-    }).catch(die)
-}
-
 const targetSeeker = (tlr) => {
 }
 
-// return object containing number of steps and step ratio
-const findStep = (slr, tlr) => {
-}
+//safeDraw(web3.utils.toWei('2.20', 'ether')).then(log)
+// rap: gived governance debt of cdp 
+// amt of mkr required to clear all debt = rap(cdp)/peek(val)
+utils.findMyCDP().then((cdp) => {
+    mk.tub.methods.rap(web3.utils.padLeft(web3.utils.toHex(cdp.id), 64)).call().then((gd) => {
+        mk.tub.methods.chi().call().then((chi) => {
+            log(chi)
+            log(new BN(gd))
+        })
+    })
+})
 
-safeDraw(web3.utils.toWei('2.20', 'ether')).then(log)
-//lockPeth(web3.utils.toWei('0.01', 'ether'))
 /*
 load(web3.utils.toWei('0.01', 'ether')).then(() => {
     wind(web3.utils.toWei('5', 'ether'))
