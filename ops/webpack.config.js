@@ -5,11 +5,14 @@ module.exports = {
 
     externals: ['electron'],
 
-    entry: './src/mk.js',
+    entry: { 
+        mk: './src/arbitrage.js',
+        console: './src/console.js',
+    },
 
     output: {
         path: path.join(__dirname, '../build'),
-        filename: 'mk.bundle.js'
+        filename: '[name].bundle.js'
     },
     
     resolve: {

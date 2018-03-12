@@ -27,7 +27,7 @@ makerkeeper-image: mk.bundle.js makerkeeper.Dockerfile
 	docker build -f ops/makerkeeper.Dockerfile -t $(me)/makerkeeper_node:$(version) -t makerkeeper_node:$(version) .
 	touch build/makerkeeper-image
 
-mk.bundle.js: node_modules web3.js webpack.config.js $(contracts) $(src)
+mk.bundle.js: node_modules webpack.config.js $(contracts) $(src)
 	$(webpack) --config ./ops/webpack.config.js
 
 build/node_modules: package.json package-lock.json
