@@ -6,12 +6,15 @@ module.exports = {
     externals: ['electron'],
 
     entry: { 
-        bot: './src/arbitrage.js',
+        console: './src/console.js',
     },
 
     output: {
         path: path.join(__dirname, '../build'),
-        filename: '[name].bundle.js'
+        filename: '[name].bundle.js',
+        library: 't',
+        libraryExport: 'default',
+        libraryTarget: 'assign',
     },
     
     resolve: {

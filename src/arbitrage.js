@@ -25,13 +25,24 @@ const findStep = (slr, tlr) => {
 }
 
 const arbitrage = () => {
-    // Borrow if high
-    // drawDAI
+    // Stock: Eth
+    // Bond: Dai
+    //
+    // eth price low
+    //
+    // Short(dai):
+    // - sell(dai)
+    // - lock(peth)
+    //
+    //
+    // eth price high
+    //
+    // Short(eth): 
+    // - wipe(debt)
+    // - borrow(dai)
+    //
+    // Goal: amount(eth) >= init(eth) at ${maturity} 
 
-    // Lock if low
-    // Exchange dai => weth => peth
-    // Lock 
-    
-    // Emergency break
-    // shut
+    // p + s = c + b
+
 }

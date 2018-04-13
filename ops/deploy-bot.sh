@@ -1,9 +1,9 @@
 #!/bin/bash
 
 provider="parity"
-image="`whoami`/makerkeeper_node:latest"
+image="`whoami`/makerkeeper_bot:latest"
 
-[[ -z "`docker service ls -qf name=makerkeeper_node`" ]] || docker service rm makerkeeper_node
+[[ -z "`docker service ls -qf name=makerkeeper_bot`" ]] || docker service rm makerkeeper_bot
 
 if [[ -z "$ETH_ADDRESS" ]] 
 then
@@ -39,7 +39,7 @@ networks:
     back:
 
 services:
-    node:
+    bot:
         image: $image
         deploy:
             mode: global
@@ -82,4 +82,4 @@ EOF
 docker stack deploy -c /tmp/makerkeeper/docker-compose.yml makerkeeper
 rm /tmp/makerkeeper/docker-compose.yml
 
-docker service logs -f makerkeeper_node
+docker service logs -f makerkeeper_bot

@@ -5,6 +5,8 @@ import { cdp } from './cdp'
 // End User Function
 ////////////////////////////////////////
 
+const t = {}
+
 const load = (amt) => {
     return ex.ethToWeth(amt).then(() => {
         return ex.wethToPeth(amt).then((peth) => {
@@ -28,3 +30,7 @@ const wind = (amt) => {
 const unwind = () => {}
 
 const init = () => {}
+
+t.cdp = cdp
+
+export default t

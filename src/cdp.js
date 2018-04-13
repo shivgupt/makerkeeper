@@ -11,36 +11,50 @@ const log = utils.log('MK')
 
 const die = utils.die('MK')
 
+var CDP_ID = null
+
 // find CDP owned by ETH_ADDRESS env var
-findMyCDP = () => {
-    if (CDP_ID !== null){
-        log('Found CDP in cache')
+const findMyCDP = () => {
+    let cdp = findCDP(process.env.ETH_ADDRESS.toLowerCase())
+    CDP_ID = cdp.id
+    return cdp
+}
+
+const findCDP = (address) => {
+    log(address)
+    if (CDP_ID !== null && process.env.ETH_ADDRESS.toLowerCase() === address) {
         return (mk.tub.methods.cups(eth.encodeCDP(CDP_ID)).call().then((cdp) => {
+            log('Found CDP in cache')
             cdp.id = CDP_ID
             return (cdp)
         }).catch(die))
-    }
-
-    return (mk.tub.methods.cupi().call().then((totalCDP) => {
-        const cdpPromises = []
-        for (let i = 0; i <= totalCDP; i++){
-                cdpPromises.push( mk.tub.methods.cups(eth.encodeCDP(i)).call())
-        }
-        return (Promise.all(cdpPromises).then((cdps) => {
+    } else {
+        return (mk.tub.methods.cupi().call().then((totalCDP) => {
+            const cdpPromises = []
             for (let i = 0; i <= totalCDP; i++){
-                if ( cdps[i].lad.toLowerCase() === process.env.ETH_ADDRESS.toLowerCase()){
-                    cdps[i].id = i
-                    CDP_ID = i
-                    return (cdps[i])
-                }
+                    cdpPromises.push( mk.tub.methods.cups(eth.encodeCDP(i)).call())
             }
+            return (Promise.all(cdpPromises).then((cdps) => {
+                for (let i = 0; i <= totalCDP; i++){
+                    if ( cdps[i].lad.toLowerCase() === address){
+                        cdps[i].id = i
+                        return (cdps[i])
+                    }
+                }
+            }).catch(die))
         }).catch(die))
-    }).catch(die))
+    }
+}
+
+const getBalance = (token, account) => {
+    return token.methods.balanceOf(account).call().then(t => { return (new eth.BN(p))}).catch(die)
 }
 
 ////////////////////////////////////////
 // Export object
 ////////////////////////////////////////
+
+const cdp = {}
 
 cdp.openCDP = () => {
     return (eth.sendTx({
@@ -49,11 +63,9 @@ cdp.openCDP = () => {
     }))
 }
 
-const cdp = {}
-
 // peth (BN) units of peth to lock-up as collateral in our CDP
 cdp.lockPeth = (peth) => {
-    if (new BN(peth).lte(eth.wad('0.005')))
+    if (new eth.BN(peth).lte(eth.wad('0.005')))
     {
         log('Please lock up more than 0.005 PETH at a time')
         return (null)
@@ -65,6 +77,25 @@ cdp.lockPeth = (peth) => {
             data: mk.tub.methods.lock(eth.encodeCDP(cdp.id), peth ).encodeABI()
         }))
     }).catch(die))
+}
+
+// Returns current position in DAI of an account
+cdp.score = (account, price ) => {
+    // eth + weth + peth - debt + dai
+    const cdp = findCDP(account)
+    const e = eth.getBalance(account)
+    log (e)
+    const ep = price
+    log(ep)
+    const w = getBalance(tk.weth, account)
+    log(w)
+    const p = getBalance(tk.peth, account)
+    log(p)
+    const d = getBalance(tk.dai, account)
+    const debt = new eth.BN(cdp.art)
+    const c = new eth.BN(cdp.ink)
+
+    return e.mul(ep) + w.mul(ep) + p.mul(ep) + c.mul(ep) + d - debt
 }
 
 cdp.drawDai = (dai) => {
@@ -80,7 +111,15 @@ cdp.drawDai = (dai) => {
 
 // rap: gived governance debt of cdp 
 // amt of mkr required to clear all debt = rap(cdp)/peek(val)
-cdp.wipeDai = (pc) => {}
+cdp.wipeDai = (dai) => {
+    log(`About to wipe ${dai} debt`)
+    return (findMyCDP().then ( (cdp) => {
+        return (eth.sendTx({
+            to: mk.tub.options.address,
+            data: mk.tub.methods.wipe(eth.encodeCDP(cdp.id), dai).encodeABI()
+        }))
+    }).catch(die))
+}
 
 cdp.freePeth = (peth) => {
     log(`About to free ${peth} peth from CDP`)
@@ -99,7 +138,7 @@ cdp.safeDraw = (tlr) => {
     return findMyCDP().then((cdp) => {
         return mk.tub.methods.tag().call().then((ethPrice) => {
             return mk.tub.methods.per().call().then((ray) => {
-                return ((new BN(cdp.ink)).mul(eth.wad(ethPrice)).div(new BN(tlr)).div(new BN(ray)) - (new BN(cdp.art)))
+                return ((new eth.BN(cdp.ink)).mul(eth.wad(ethPrice)).div(new eth.BN(tlr)).div(new eth.BN(ray)) - (new eth.BN(cdp.art)))
             }).catch(die)
         }).catch(die)
     }).catch(die)

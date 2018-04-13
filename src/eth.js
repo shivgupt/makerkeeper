@@ -73,6 +73,10 @@ tk.mkr = new web3.eth.Contract(mkrData.abi, mkrData.address)
 // eth for Ethereum utilites
 const eth = {}
 
+eth.getBalance = (account) => {
+    return (web3.eth.getBalance(account).then(e => new BN(e)).catch(die))
+}
+
 eth.price = () => {
     return (mk.tub.methods.tag().call().then((result) => {
         log(JSON.stringify(result))

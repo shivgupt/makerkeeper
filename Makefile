@@ -11,24 +11,35 @@ webpack=node_modules/.bin/webpack
 src=$(shell find src -type f -name "*.js")
 contracts=$(shell find contracts -type f -name "*.json")
 
-contracts=$(shell mkdir -p build)
+$(shell mkdir -p build)
 
 # Rules
 
-all: makerkeeper-image
+all: console-image bot-image
 	@true
 
-mk: makerkeeper-image
-	docker push $(me)/makerkeeper_node:$(version)
-	scp ops/deploy-mk.sh $(remote):~
-	ssh $(remote) ETH_ADDRESS=$$ETH_ADDRESS bash deploy-mk.sh
+deploy-bot: bot-image
+	docker push $(me)/makerkeeper_bot:$(version)
+	scp ops/deploy-bot.sh $(remote):~
+	ssh $(remote) ETH_ADDRESS=$$ETH_ADDRESS bash deploy-bot.sh
 	
-makerkeeper-image: mk.bundle.js makerkeeper.Dockerfile
-	docker build -f ops/makerkeeper.Dockerfile -t $(me)/makerkeeper_node:$(version) -t makerkeeper_node:$(version) .
-	touch build/makerkeeper-image
+deploy-console: console-image
+	docker push $(me)/makerkeeper_console:$(version)
+	scp ops/deploy-console.sh $(remote):~
+	
+console-image: console.bundle.js console.Dockerfile
+	docker build -f ops/console.Dockerfile -t $(me)/makerkeeper_console:$(version) .
+	touch build/console-image
 
-mk.bundle.js: node_modules webpack.config.js $(contracts) $(src)
+bot-image: bot.bundle.js bot.Dockerfile
+	docker build -f ops/bot.Dockerfile -t $(me)/makerkeeper_bot:$(version) .
+	touch build/bot-image
+
+bot.bundle.js: node_modules webpack.config.js $(contracts) $(src)
 	$(webpack) --config ./ops/webpack.config.js
+
+console.bundle.js: node_modules webpack.console.js $(contracts) $(src)
+	$(webpack) --config ./ops/webpack.console.js
 
 build/node_modules: package.json package-lock.json
 	npm install
