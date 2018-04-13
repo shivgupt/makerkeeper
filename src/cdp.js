@@ -65,9 +65,10 @@ cdp.openCDP = () => {
 
 // peth (BN) units of peth to lock-up as collateral in our CDP
 cdp.lockPeth = (peth) => {
-    if (new eth.BN(peth).lte(eth.wad('0.005')))
+    var wad = eth.wad('0.005')
+    if (new eth.BN(peth).lt(wad))
     {
-        log('Please lock up more than 0.005 PETH at a time')
+        log(`Please lock up more than 0.005 PETH at a time (${peth} < ${wad})`)
         return (null)
     }
     log(`About to lock ${peth} peth in CDP`)

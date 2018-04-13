@@ -1,4 +1,4 @@
-import { mk, tk, eth } from './eth'
+import { mk, tk, eth, web3 } from './eth'
 import { utils } from './utility'
 
 ////////////////////////////////////////
@@ -50,12 +50,12 @@ const exchange = (pay, buy, amt) => {
 // ex for exchange
 const ex = {}
 
-// eth (BN): units of eth being converted
-ex.ethToWeth = (eth) => {
-    log(`About to turn ${eth} eth into weth`)
+// ether (BN): units of ether being converted
+ex.ethToWeth = (ether) => {
+    log(`About to turn ${ether} eth into weth`)
     return eth.sendTx({
         to: tk.weth.options.address,
-        value: eth,
+        value: ether,
         data: tk.weth.methods.deposit().encodeABI()
     })
 }
@@ -87,13 +87,19 @@ ex.wethToDai = (weth) => {
 
 // weth (BN): units of weth being converted
 ex.wethToPeth = (weth) => {
-    log(`About to convert ${weth} weth to peth`)
-    return eth.approveSpending(mk.tub, tk.weth).then(() => {
-        return eth.sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.join(weth).encodeABI()
-        }).then((tx) => {
-            return mk.tub.methods.ask(weth).call()
+    return mk.tub.methods.ask(web3.utils.toWei('1','ether')).call().then( (ask) => {
+        log(`Ask = ${ask}`)
+        var peth = (new BN(web3.utils.toWei('1','ether'))).mul( new BN(weth)).div( new BN(ask))
+        log(`About to convert ${weth} weth to ${peth} peth`)
+                //return peth
+
+        return eth.approveSpending(mk.tub, tk.weth).then(() => {
+            return eth.sendTx({
+                to: mk.tub.options.address,
+                data: mk.tub.methods.join(peth).encodeABI()
+            }).then((tx) => {
+                return peth
+            }).catch(die)
         }).catch(die)
     }).catch(die)
 }

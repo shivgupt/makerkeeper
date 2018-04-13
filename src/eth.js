@@ -97,13 +97,20 @@ eth.sendTx = (tx) => {
                 log(`Sending transaction: ${JSON.stringify(tx)}`)
 
                 // send the transaction
-                return web3.eth.sendTransaction(tx)
-                .once('transactionHash', (hash) => { log(`Transaction Sent: ${hash}`) })
-                .once('receipt', (reciept) => { log(`Transaction Receipt: ${JSON.stringify(receipt)}`) })
-                
+                return new Promise((resolve, reject) => {
+                    var _hash
+                    return web3.eth.sendTransaction(tx).once('transactionHash', (hash) => { 
+                        log(`Transaction Sent: ${hash}`) 
+                        _hash = hash
+                    }).once('receipt',(receipt) => {
+                        log(`Transaction Receipt: ${JSON.stringify(receipt)}`)
+                        return resolve(receipt)
+                    }).catch((error) => {
+                        return resolve(_hash)
+                    })
+                })
 
             }).catch(die)) 
-
         }).catch(die))
     }).catch(die))
 
@@ -136,4 +143,4 @@ eth.approveSpending = (spender, toSpend) => {
 
 eth.BN = BN
 
-export { mk, tk, eth }
+export { mk, tk, eth, web3 }

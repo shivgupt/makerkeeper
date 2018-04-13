@@ -1,6 +1,6 @@
 #!/bin/bash
 
-provider="parity"
+provider="geth"
 image="`whoami`/makerkeeper_console:latest"
 
 [[ -z "`docker service ls -qf name=makerkeeper_console`" ]] || docker service rm makerkeeper_console
