@@ -103,10 +103,18 @@ eth.sendTx = (tx) => {
                         log(`Transaction Sent: ${hash}`) 
                         _hash = hash
                     }).once('receipt',(receipt) => {
-                        log(`Transaction Receipt: ${JSON.stringify(receipt)}`)
                         return resolve(receipt)
                     }).catch((error) => {
-                        return resolve(_hash)
+                        log(error)
+                        // Web3 throws error while waiting for reciept. So check manually
+
+                        const wait = () => setTimeout(() => {
+                            web3.eth.getTransactionReceipt(_hash).then((receipt) => {
+                                if (receipt)
+                                    return resolve(receipt)
+                            }).catch(wait)
+                        }, 5000)
+                        return wait()
                     })
                 })
 
@@ -121,7 +129,7 @@ eth.encodeCDP = (id) => {
 } 
 
 // Num => BN( wad )
-eth.wad = (num) => {
+eth.toWad = (num) => {
     return (new BN(web3.utils.toWei(String(num), 'ether')))
 }
 

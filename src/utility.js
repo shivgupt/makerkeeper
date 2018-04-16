@@ -1,4 +1,5 @@
 import fs from 'fs'
+import BN from 'bn.js'
 
 ////////////////////////////////////////
 // Exported object methods
@@ -11,6 +12,7 @@ const utils = {}
 utils.die = (tag) => {
     return ((msg) => {
         console.error(`${new Date().toISOString()} [${tag}] Fatal: ${msg}`)
+        if (msg.stack) console.error(`${new Date().toISOString()} [${tag}] ${msg.stack}`)
         process.exit(1)
     })
 }
@@ -21,6 +23,25 @@ utils.log = (tag) => {
     })
 }
 
+const ray = new BN('1' + '0'.repeat(27))
+const wad = new BN('1' + '0'.repeat(18))
+const big2 = new BN(2)
+
+utils.rmul = (a,b) => {
+    return (((new BN(a)).mul(new BN(b))).add(ray.div(big2))).div(ray)
+}
+
+utils.wmul = (a,b) => {
+    return (((new BN(a)).mul(new BN(b))).add(wad.div(big2))).div(wad)
+}
+
+utils.wdiv = (a,b) => {
+    return (((new BN(a)).mul(wad)).add((new BN(b)).div(big2))).div(new BN(b))
+}
+
+utils.rdiv = (a,b) => {
+    return (((new BN(a)).mul(ray)).add((new BN(b)).div(big2))).div(new BN(b))
+}
 
 const log = utils.log('UTIL')
 const die = utils.die('UTIL')
