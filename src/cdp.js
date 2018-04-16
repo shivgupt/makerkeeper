@@ -158,7 +158,7 @@ cdp.get_draw_amt = (liq_price) => {
         const mat = new BN(res[2]) // ray
         const per = new BN(res[3]) // ray
         const chi = new BN(res[4]) // ray
-        const tag = new BN(res[5]) // wad
+        const tag = new BN(res[5]) // ray?!
 
         log(`ink=${ink.toString()} art=${art.toString()} par=${par.toString()} mat=${mat.toString()} per=${per.toString()} tag=${tag.toString()} chi=${chi.toString()}`)
         const debt = rmul(rmul(rmul(par,mat),chi),art)
@@ -169,10 +169,11 @@ cdp.get_draw_amt = (liq_price) => {
 
         const liq_ratio = rmul( rmul( par, chi), mat) // ray
 
-        const numerator = wmul( tag, rmul(liq_ratio, art).sub( wmul(LP, ink) )) // wad
+        const numerator = rmul( tag, rmul(liq_ratio, art).sub( wmul(LP, ink) )) // wad
 
-        const denominator = LP.sub( rmul(liq_ratio, tag) ) // wad
+        const denominator = LP.sub( rmul(liq_ratio, tag).div(new BN('1000000000')) ) // wad
 
+        
         return utils.wdiv(numerator, denominator).toString() // wad
 
     }).catch(die)
