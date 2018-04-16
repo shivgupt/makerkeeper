@@ -33,7 +33,7 @@
     {"name":"sai","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"sin","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"skr","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
-    {"name":"tag","constant":true,"inputs":[],"outputs":[{"name":"wad","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+    {"name":"tag","constant":true,"inputs":[],"outputs":[{"name":"ray","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"tap","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"tax","constant":true,"inputs":[],"outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
     {"name":"vox","constant":true,"inputs":[],"outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},

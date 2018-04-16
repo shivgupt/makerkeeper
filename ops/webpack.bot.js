@@ -6,7 +6,7 @@ module.exports = {
     externals: ['electron'],
 
     entry: { 
-        bot: './src/arbitrage.js',
+        bot: './src/bot.js',
     },
 
     output: {
