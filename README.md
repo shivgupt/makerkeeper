@@ -1,3 +1,25 @@
+# MakerDAO Tools
+
+## Motivation
+
+MakerDAO is an amazing project which provides a base for bringing various financial applications - such as loan, insurance and leveraging to the blockchain. Current dashboard provided by the makerDAO team can get a bit confusing and requires a lot of atomic steps. If a new user wants to take loan against ether by opening a CDP, he would have to go through a series of steps and signing each transaction individually:
+
+   1. Approve appropriate permissions to various smart contract
+   2. Convert eth to weth
+   3. Convert weth to peth
+   4. Open CDP if it does not already exist
+   5. Lock Peth into CDP
+   6. Draw Dai
+
+In this project I have tried to provide tools that would provide a simpler way of accomplishing the same thing in a simpler way. So far I have created the backend which provides high level functions consolidating several transactions and others do the math required to reach a specific state. Next I will use react and IPFS to provide a dashboard frontend that even non technical users can use.
+
+## Getting started
+- git clone https://github.com/shivgupt/makerkeeper.git
+- Setup environment variables `ETH_ADDRESS` and `remotessh` to the ethereum account address and the server hostname of your server respectively.
+- Import an account to ethprovider serving the makerkeeper. If using an account created on MetaMask, import the private key into ethprovider using the personal_importRawKey RPC method and then add it to docker secret : `echo '{"jsonrpc":"2.0","method":"personal_importRawKey","params":["secretKey","secretPassword"],"id":1}' | sudo nc -U /var/lib/docker/volumes/ethprovider_ipc/_data/geth.ipc`
+- make deploy-bot
+- make deploy-console
+- You are all set to play with the makerkeeper-console
 
 # MakerDAO Cheat Sheet
 

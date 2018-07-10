@@ -4,7 +4,7 @@ VPATH=src:ops:build
 
 me=$(shell whoami)
 version=latest
-remote=bonet
+remote=${remotessh}
 
 webpack=node_modules/.bin/webpack
 
