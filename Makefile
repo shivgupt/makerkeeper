@@ -15,8 +15,13 @@ $(shell mkdir -p build)
 
 # Rules
 
+default: console.bundle.js
+
 all: console-image bot-image
 	@true
+
+clean:
+	rm -rf build/*
 
 deploy-bot: bot-image
 	docker push $(me)/makerkeeper_bot:$(version)
