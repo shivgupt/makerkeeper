@@ -2,8 +2,6 @@ import fs from 'fs'
 import https from 'https'
 import net from 'net'
 
-import Web3 from 'web3'
-
 import daiData from '../contracts/dai'
 import topData from '../contracts/top'
 import tubData from '../contracts/tub'
@@ -23,33 +21,7 @@ import { utils } from './utility'
 const log = utils.log('ETH')
 const die = utils.die('ETH')
 
-
-const web3 = new Web3(new Web3.providers.IpcProvider(
-    process.env.ETH_PROVIDER,
-    new net.Socket()
-))
-
 const BN = web3.utils.BN
-
-// Return gas price in wei
-const getGasPrice = () => {
-    return new Promise( (resolve, reject) => {
-        https.get('https://ethgasstation.info/json/ethgasAPI.json', (res) => {
-            res.setEncoding('utf8')
-            var data = ''
-            res.on('data', (chunk) => {
-                data += chunk
-            })
-            res.on('end', () => {
-                // Div by 10 because API returns 10x high value
-                return resolve(web3.utils.toWei(String(JSON.parse(data).average/10), 'gwei'))
-            })
-            res.on('error', (err) => {
-                return reject(err)
-            })
-        })
-    })
-}
 
 ////////////////////////////////////////
 // Defined Exported Objects
@@ -73,6 +45,10 @@ tk.mkr = new web3.eth.Contract(mkrData.abi, mkrData.address)
 // eth for Ethereum utilites
 const eth = {}
 
+eth.getTokenBalance = (token, account) => {
+    return (tk[token].methods.balanceOf(account).call())
+}
+
 eth.getBalance = (account) => {
     return (web3.eth.getBalance(account).then(e => new BN(e)).catch(die))
 }
@@ -82,46 +58,6 @@ eth.price = () => {
         log(JSON.stringify(result))
         return (result)
     }).catch(die))
-}
-
-eth.sendTx = (tx) => {
-
-    tx.from = process.env.ETH_ADDRESS.toLowerCase()
-    return (getGasPrice().then((gasPrice) => {
-        tx.gasPrice = gasPrice
-
-        return (web3.eth.estimateGas(tx).then(gas=>{
-            tx.gas = gas * 2
-
-            return (web3.eth.personal.unlockAccount(tx.from, fs.readFileSync(`/run/secrets/${tx.from}`, 'utf8')).then( (result) => {
-                log(`Sending transaction: ${JSON.stringify(tx)}`)
-
-                // send the transaction
-                return new Promise((resolve, reject) => {
-                    var _hash
-                    return web3.eth.sendTransaction(tx).once('transactionHash', (hash) => { 
-                        log(`Transaction Sent: ${hash}`) 
-                        _hash = hash
-                    }).once('receipt',(receipt) => {
-                        return resolve(receipt)
-                    }).catch((error) => {
-                        log(error)
-                        // Web3 throws error while waiting for reciept. So check manually
-
-                        const wait = () => setTimeout(() => {
-                            web3.eth.getTransactionReceipt(_hash).then((receipt) => {
-                                if (receipt)
-                                    return resolve(receipt)
-                            }).catch(wait)
-                        }, 5000)
-                        return wait()
-                    })
-                })
-
-            }).catch(die)) 
-        }).catch(die))
-    }).catch(die))
-
 }
 
 eth.encodeCDP = (id) => {
@@ -139,7 +75,7 @@ eth.approveSpending = (spender, toSpend) => {
     return (toSpend.methods.allowance(process.env.ETH_ADDRESS, spender.options.address).call().then((allowance) => {
         if (Number(allowance) === 0) {
             log(`Approving ${spender.options.address} to spend ${toSpend.options.address}`)
-            return (eth.sendTx({
+            return (sendTx({
                 to: toSpend.options.address,
                 data: toSpend.methods.approve(spender.options.address, maxINT).encodeABI()
             }))

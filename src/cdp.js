@@ -16,6 +16,7 @@ var CDP_ID = null
 // find CDP owned by ETH_ADDRESS env var
 const findMyCDP = () => {
     return findCDP(process.env.ETH_ADDRESS.toLowerCase()).then((Mycdp) => {
+        log(`CDP: ${JSON.stringify(Mycdp, null, 2)}`)
         CDP_ID = Mycdp.id
         return Mycdp
     })
@@ -24,7 +25,7 @@ const findMyCDP = () => {
 const findCDP = (address) => {
     if (CDP_ID && process.env.ETH_ADDRESS.toLowerCase() === address.toLowerCase()) {
         return (mk.tub.methods.cups(eth.encodeCDP(CDP_ID)).call().then((Mycdp) => {
-            log('Found CDP in cache')
+            log(`Found CDP in cache : ${CDP_ID}`)
             Mycdp.id = CDP_ID
             return (Mycdp)
         }).catch(die))
@@ -58,7 +59,7 @@ const getBalance = (token, account) => {
 const cdp = {}
 
 cdp.openCDP = () => {
-    return (eth.sendTx({
+    return (sendTx({
         to: mk.tub.options.address,
         data: mk.tub.methods.open().encodeABI()
     }))
@@ -66,6 +67,7 @@ cdp.openCDP = () => {
 
 // peth (BN) units of peth to lock-up as collateral in our CDP
 cdp.lockPeth = (peth) => {
+    
     var wad = eth.toWad('0.005')
     if (new eth.BN(peth).lt(wad))
     {
@@ -74,7 +76,7 @@ cdp.lockPeth = (peth) => {
     }
     log(`About to lock ${peth} peth in CDP`)
     return (findMyCDP().then((Mycdp) => {
-        return (eth.sendTx({
+        return (sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.lock(eth.encodeCDP(Mycdp.id), peth ).encodeABI()
         }))
@@ -105,7 +107,7 @@ cdp.drawDai = (dai) => {
     log(`About to draw ${dai} dai from CDP`)
     return (findMyCDP().then( (Mycdp) => {
         //TODO check safe low ratio
-        return (eth.sendTx({
+        return (sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.draw(eth.encodeCDP(Mycdp.id), dai).encodeABI()
         }))
@@ -117,7 +119,7 @@ cdp.drawDai = (dai) => {
 cdp.wipeDai = (dai) => {
     log(`About to wipe ${dai} debt`)
     return (findMyCDP().then ( (Mycdp) => {
-        return (eth.sendTx({
+        return (sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
         }))
@@ -128,7 +130,7 @@ cdp.freePeth = (peth) => {
     log(`About to free ${peth} peth from CDP`)
     return (findMyCDP().then( (Mycdp) => {
         //TODO check safe low ratio
-        return (eth.sendTx({
+        return (sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.free(eth.encodeCDP(Mycdp.id), peth).encodeABI()
         }))

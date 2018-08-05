@@ -11,7 +11,7 @@ MakerDAO is an amazing project which provides a base for bringing various financ
    5. Lock Peth into CDP
    6. Draw Dai
 
-In this project I have tried to provide tools that would provide a simpler way of accomplishing the same thing in a simpler way. So far I have created the backend which provides high level functions consolidating several transactions and others do the math required to reach a specific state. Next I will use react and IPFS to provide a dashboard frontend that even non technical users can use.
+In this project I have tried to provide tools that would provide a simpler way of accomplishing the same thing in a in fewer steps. So far I have created the backend which provides high level functions consolidating several transactions and others do the math required to reach a specific state. Next I will use react and IPFS to provide a dashboard frontend that even non technical users can use.
 
 ## Getting started
 - git clone https://github.com/shivgupt/makerkeeper.git

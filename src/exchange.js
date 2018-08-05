@@ -34,7 +34,7 @@ const exchange = (pay, buy, amt) => {
         log(JSON.stringify(offer))
         const quantity = (new BN(offer.pay_amt)).mul(new BN(amt)).div(new BN(offer.buy_amt))
         log(quantity)
-        return (eth.sendTx({
+        return (sendTx({
             to: tk.oasis.options.address,
             data: tk.oasis.methods.buy(offer.id, quantity).encodeABI()
         }).then(()=>{
@@ -53,7 +53,7 @@ const ex = {}
 // ether (BN): units of ether being converted
 ex.ethToWeth = (ether) => {
     log(`About to turn ${ether} eth into weth`)
-    return eth.sendTx({
+    return sendTx({
         to: tk.weth.options.address,
         value: ether,
         data: tk.weth.methods.deposit().encodeABI()
@@ -63,7 +63,7 @@ ex.ethToWeth = (ether) => {
 // weth (BN): units of weth being converted
 ex.wethToeth = (weth) => {
     log(`About to convert ${weth} weth to eth`)
-    return eth.sendTx({
+    return sendTx({
         to: tk.weth.options.address,
         data: tk.weth.methods.withdraw(weth).encodeABI()
     })
@@ -94,7 +94,7 @@ ex.wethToPeth = (weth) => {
                 //return peth
 
         return eth.approveSpending(mk.tub, tk.weth).then(() => {
-            return eth.sendTx({
+            return sendTx({
                 to: mk.tub.options.address,
                 data: mk.tub.methods.join(peth).encodeABI()
             }).then((tx) => {
@@ -108,7 +108,7 @@ ex.wethToPeth = (weth) => {
 ex.pethToWeth = (peth) => {
     log(`About to convert ${peth} peth to weth`)
     return eth.approveSpending(mk.tub, tk.peth).then(() => {
-        return eth.sendTx({
+        return sendTx({
             to: mk.tub.options.address,
             data: mk.tub.methods.exit(peth).encodeABI()
         }).then(() => {

@@ -1,6 +1,6 @@
 import { ex } from './exchange'
 import { cdp } from './cdp'
-import { eth } from './eth'
+import { eth, tk } from './eth'
 import { utils } from './utility'
 
 const log = utils.log('CON')
@@ -13,6 +13,7 @@ const die = utils.die('CON')
 
 const t = {}
 
+// Amount in ether
 t.load = (amt) => {
     var wei = eth.toWad(amt)
     return ex.ethToWeth(wei).then(() => {
@@ -48,5 +49,6 @@ t.wind_to_lp = (dai) => {
 t.cdp = cdp
 t.ex = ex
 t.eth = eth
+t.tk = tk
 
 export default t

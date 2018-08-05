@@ -3,7 +3,7 @@ const path = require('path')
 module.exports = { 
     target: 'node',
 
-    externals: ['electron'],
+    externals: ['electron', 'web3', 'sendTx', 'wallet'],
 
     entry: { 
         console: './src/console.js',
