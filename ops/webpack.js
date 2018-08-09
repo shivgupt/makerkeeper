@@ -3,15 +3,18 @@ const path = require('path')
 module.exports = { 
     target: 'node',
 
-    externals: ['electron'],
+    externals: ['electron', 'web3', 'sendTx', 'wallet'],
 
     entry: { 
-        bot: './src/bot.js',
+        entry: './src/entry.js',
     },
 
     output: {
         path: path.join(__dirname, '../build'),
-        filename: '[name].bundle.js'
+        filename: 'makerkeeper.js',
+        library: 'mk',
+        libraryExport: 'default',
+        libraryTarget: 'assign',
     },
     
     resolve: {
