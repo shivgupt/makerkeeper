@@ -1,6 +1,6 @@
 import { ex } from './exchange'
 import { cdp } from './cdp'
-import { eth, tk } from './eth'
+import { eth, tk, mk } from './eth'
 import { utils } from './utility'
 
 const log = utils.log('CON')
@@ -50,5 +50,6 @@ t.cdp = cdp
 t.ex = ex
 t.eth = eth
 t.tk = tk
+t.mk = mk
 
 export default t
