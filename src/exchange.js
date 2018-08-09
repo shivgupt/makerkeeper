@@ -1,4 +1,4 @@
-import { mk, tk, eth, web3 } from './eth'
+import { dao, tk, eth, web3 } from './eth'
 import { utils } from './utility'
 
 ////////////////////////////////////////
@@ -87,16 +87,16 @@ ex.wethToDai = (weth) => {
 
 // weth (BN): units of weth being converted
 ex.wethToPeth = (weth) => {
-    return mk.tub.methods.ask(web3.utils.toWei('1','ether')).call().then( (ask) => {
+    return dao.tub.methods.ask(web3.utils.toWei('1','ether')).call().then( (ask) => {
         log(`Ask = ${ask}`)
         var peth = (new BN(web3.utils.toWei('1','ether'))).mul( new BN(weth)).div( new BN(ask))
         log(`About to convert ${weth} weth to ${peth} peth`)
                 //return peth
 
-        return eth.approveSpending(mk.tub, tk.weth).then(() => {
+        return eth.approveSpending(dao.tub, tk.weth).then(() => {
             return sendTx({
-                to: mk.tub.options.address,
-                data: mk.tub.methods.join(peth).encodeABI()
+                to: dao.tub.options.address,
+                data: dao.tub.methods.join(peth).encodeABI()
             }).then((tx) => {
                 return peth
             }).catch(die)
@@ -107,12 +107,12 @@ ex.wethToPeth = (weth) => {
 // peth (BN): units of peth being converted
 ex.pethToWeth = (peth) => {
     log(`About to convert ${peth} peth to weth`)
-    return eth.approveSpending(mk.tub, tk.peth).then(() => {
+    return eth.approveSpending(dao.tub, tk.peth).then(() => {
         return sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.exit(peth).encodeABI()
+            to: dao.tub.options.address,
+            data: dao.tub.methods.exit(peth).encodeABI()
         }).then(() => {
-            return mk.tub.methods.bid(peth).call()
+            return dao.tub.methods.bid(peth).call()
         }).catch(die)
     }).catch(die)
 }

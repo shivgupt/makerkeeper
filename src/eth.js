@@ -27,12 +27,12 @@ const BN = web3.utils.BN
 // Defined Exported Objects
 ////////////////////////////////////////
 
-// mk for makerkeeper
-const mk = {}
-mk.top = new web3.eth.Contract(topData.abi, topData.address)
-mk.tub = new web3.eth.Contract(tubData.abi, tubData.address)
-mk.tap = new web3.eth.Contract(tapData.abi, tapData.address)
-mk.vox = new web3.eth.Contract(voxData.abi, voxData.address)
+// dao for makerdao
+const dao = {}
+dao.top = new web3.eth.Contract(topData.abi, topData.address)
+dao.tub = new web3.eth.Contract(tubData.abi, tubData.address)
+dao.tap = new web3.eth.Contract(tapData.abi, tapData.address)
+dao.vox = new web3.eth.Contract(voxData.abi, voxData.address)
 
 // tk for token
 const tk = {}
@@ -54,7 +54,7 @@ eth.getBalance = (account) => {
 }
 
 eth.price = () => {
-    return (mk.tub.methods.tag().call().then((result) => {
+    return (dao.tub.methods.tag().call().then((result) => {
         log(JSON.stringify(result))
         return (result)
     }).catch(die))
@@ -69,7 +69,7 @@ eth.toWad = (num) => {
     return (new BN(web3.utils.toWei(String(num), 'ether')))
 }
 
-// spender & toSpend are both contract object  eg mk.tub and tk.peth
+// spender & toSpend are both contract object  eg dao.tub and tk.peth
 eth.approveSpending = (spender, toSpend) => {
     const maxINT = new BN( 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff', 16)
     return (toSpend.methods.allowance(process.env.ETH_ADDRESS, spender.options.address).call().then((allowance) => {
@@ -87,4 +87,4 @@ eth.approveSpending = (spender, toSpend) => {
 
 eth.BN = BN
 
-export { mk, tk, eth, web3 }
+export { dao, tk, eth, web3 }

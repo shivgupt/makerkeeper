@@ -1,21 +1,21 @@
 import { ex } from './exchange'
 import { cdp } from './cdp'
-import { eth, tk, mk } from './eth'
+import { eth, tk, dao } from './eth'
 import { utils } from './utility'
 
 const log = utils.log('CON')
-
 const die = utils.die('CON')
 
 ////////////////////////////////////////
 // End User Function
 ////////////////////////////////////////
 
-const t = {}
+const mk = {}
 
-// Amount in ether
-t.load = (amt) => {
+// amt = Amount in ether
+mk.load = (amt) => {
     var wei = eth.toWad(amt)
+    // TODO: open CDP if not already open
     return ex.ethToWeth(wei).then(() => {
         return ex.wethToPeth(wei).then((peth) => {
             return cdp.lockPeth(peth)
@@ -26,7 +26,7 @@ t.load = (amt) => {
 // c = (cdp.ink * price)/tlr
 // c = amt of dai-wei to draw
 //     tlr = target liquidity ration to maintain 
-t.wind = (wei) => {
+mk.wind = (wei) => {
     return cdp.drawDai(wei).then(() => {
         return ex.daiToWeth(wei).then((weth) => {
             return ex.wethToPeth(weth).then((peth) => {
@@ -36,20 +36,20 @@ t.wind = (wei) => {
     }).catch(die)
 }
 
-t.unwind = () => {}
-t.init = () => {}
+mk.unwind = () => {}
+mk.unload = () => {}
 
-t.wind_to_lp = (dai) => {
+mk.wind_to_lp = (dai) => {
     cdp.get_draw_amt(eth.toWad(dai)).then(toDraw => {
         log('Drawing: ' + toDraw.toString())
         t.wind(toDraw)
     })
 }
 
-t.cdp = cdp
-t.ex = ex
-t.eth = eth
-t.tk = tk
-t.mk = mk
+mk.cdp = cdp
+mk.ex = ex
+mk.eth = eth
+mk.tk = tk
+mk.dao = dao
 
-export default t
+export default mk

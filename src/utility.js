@@ -43,7 +43,4 @@ utils.rdiv = (a,b) => {
     return (((new BN(a)).mul(ray)).add((new BN(b)).div(big2))).div(new BN(b))
 }
 
-const log = utils.log('UTIL')
-const die = utils.die('UTIL')
-
 export { utils }

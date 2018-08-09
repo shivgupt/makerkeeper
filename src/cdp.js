@@ -1,4 +1,4 @@
-import { mk, tk, eth } from './eth'
+import { dao, tk, eth } from './eth'
 import { utils } from './utility'
 import { ex } from './exchange'
 import fs from 'fs'
@@ -24,16 +24,16 @@ const findMyCDP = () => {
 
 const findCDP = (address) => {
     if (CDP_ID && process.env.ETH_ADDRESS.toLowerCase() === address.toLowerCase()) {
-        return (mk.tub.methods.cups(eth.encodeCDP(CDP_ID)).call().then((Mycdp) => {
+        return (dao.tub.methods.cups(eth.encodeCDP(CDP_ID)).call().then((Mycdp) => {
             log(`Found CDP in cache : ${CDP_ID}`)
             Mycdp.id = CDP_ID
             return (Mycdp)
         }).catch(die))
     } else {
-        return (mk.tub.methods.cupi().call().then((totalCDP) => {
+        return (dao.tub.methods.cupi().call().then((totalCDP) => {
             const cdpPromises = []
             for (let i = 0; i <= totalCDP; i++){
-                    cdpPromises.push( mk.tub.methods.cups(eth.encodeCDP(i)).call())
+                    cdpPromises.push( dao.tub.methods.cups(eth.encodeCDP(i)).call())
             }
             return (Promise.all(cdpPromises).then((cdps) => {
                 log(`Length = ${cdps.length}`)
@@ -60,8 +60,8 @@ const cdp = {}
 
 cdp.openCDP = () => {
     return (sendTx({
-        to: mk.tub.options.address,
-        data: mk.tub.methods.open().encodeABI()
+        to: dao.tub.options.address,
+        data: dao.tub.methods.open().encodeABI()
     }))
 }
 
@@ -77,8 +77,8 @@ cdp.lockPeth = (peth) => {
     log(`About to lock ${peth} peth in CDP`)
     return (findMyCDP().then((Mycdp) => {
         return (sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.lock(eth.encodeCDP(Mycdp.id), peth ).encodeABI()
+            to: dao.tub.options.address,
+            data: dao.tub.methods.lock(eth.encodeCDP(Mycdp.id), peth ).encodeABI()
         }))
     }).catch(die))
 }
@@ -108,8 +108,8 @@ cdp.drawDai = (dai) => {
     return (findMyCDP().then( (Mycdp) => {
         //TODO check safe low ratio
         return (sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.draw(eth.encodeCDP(Mycdp.id), dai).encodeABI()
+            to: dao.tub.options.address,
+            data: dao.tub.methods.draw(eth.encodeCDP(Mycdp.id), dai).encodeABI()
         }))
     }).catch(die))
 }
@@ -120,8 +120,8 @@ cdp.wipeDai = (dai) => {
     log(`About to wipe ${dai} debt`)
     return (findMyCDP().then ( (Mycdp) => {
         return (sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
+            to: dao.tub.options.address,
+            data: dao.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
         }))
     }).catch(die))
 }
@@ -131,8 +131,8 @@ cdp.freePeth = (peth) => {
     return (findMyCDP().then( (Mycdp) => {
         //TODO check safe low ratio
         return (sendTx({
-            to: mk.tub.options.address,
-            data: mk.tub.methods.free(eth.encodeCDP(Mycdp.id), peth).encodeABI()
+            to: dao.tub.options.address,
+            data: dao.tub.methods.free(eth.encodeCDP(Mycdp.id), peth).encodeABI()
         }))
     }).catch(die))
 }
@@ -145,11 +145,11 @@ cdp.get_draw_amt = (liq_price) => {
 
     return Promise.all([
         findMyCDP(),
-        mk.vox.methods.par().call(),
-        mk.tub.methods.mat().call(),
-        mk.tub.methods.per().call(),
-        mk.tub.methods.chi().call(),
-        mk.tub.methods.tag().call()
+        dao.vox.methods.par().call(),
+        dao.tub.methods.mat().call(),
+        dao.tub.methods.per().call(),
+        dao.tub.methods.chi().call(),
+        dao.tub.methods.tag().call()
     ]).then(res=>{
 
         const mycdp = res[0]
@@ -191,8 +191,8 @@ cdp.get_draw_amt = (liq_price) => {
 //
 cdp.safeDraw = (tlr) => {
     return findMyCDP().then((Mycdp) => {
-        return mk.tub.methods.tag().call().then((ethPrice) => {
-            return mk.tub.methods.per().call().then((per) => {
+        return dao.tub.methods.tag().call().then((ethPrice) => {
+            return dao.tub.methods.per().call().then((per) => {
                 return ((new eth.BN(Mycdp.ink)).mul(eth.wad(ethPrice)).div(new eth.BN(tlr)).div(new eth.BN(per)) - (new eth.BN(Mycdp.art)))
             }).catch(die)
         }).catch(die)

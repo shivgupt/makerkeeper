@@ -16,7 +16,7 @@ module.exports = {
         libraryExport: 'default',
         libraryTarget: 'assign',
     },
-    
+
     resolve: {
         extensions: ['.js', '.json'],
         alias: { 'scrypt.js' : 'scryptsy' },
@@ -26,13 +26,13 @@ module.exports = {
         rules: [
             {
                 test: /\.js$/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['es2015'],
+                        presets: ['env'],
                     },
                 },
-                exclude: /node_modules/,
             },
         ],
     },
