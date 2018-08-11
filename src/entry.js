@@ -23,6 +23,16 @@ mk.load = (amt) => {
     }).catch(die)
 }
 
+mk.unload = () => {
+    var wei = eth.toWad(amt)
+    // TODO: safeFree
+    return cdp.freePeth(wei).then(() => {
+        return ex.pethToWeth(wei).then((weth) => {
+            return ex.wethToEth(weth)
+        }).catch(die)
+    }).catch(die)
+}
+
 // c = (cdp.ink * price)/tlr
 // c = amt of dai-wei to draw
 //     tlr = target liquidity ration to maintain 
@@ -36,13 +46,28 @@ mk.wind = (wei) => {
     }).catch(die)
 }
 
-mk.unwind = () => {}
-mk.unload = () => {}
+// peth in wei
+mk.unwind = (peth) => {
+    return cdp.freePeth(peth).then(() => {
+        return ex.pethToWeth(peth).then((weth) => {
+            return ex.wethToDai(weth).then((dai) => {
+                return cdp.wipeDai(dai)
+            }).catch(die)
+        }).catch(die)
+    }).catch(die)
+}
 
-mk.wind_to_lp = (dai) => {
-    cdp.get_draw_amt(eth.toWad(dai)).then(toDraw => {
+mk.wind_to_lp = (lp) => {
+    cdp.get_draw_amt(eth.toWad(lp)).then(toDraw => {
         log('Drawing: ' + toDraw.toString())
-        t.wind(toDraw)
+        mk.wind(toDraw)
+    })
+}
+
+mk.unwind_to_lp = (lp) => {
+    cdp.get_free_amt((lp)).then(toFree => {
+        log('Freeing: ' + toFree.toString())
+        mk.unwind(toFree)
     })
 }
 

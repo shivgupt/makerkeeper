@@ -29,7 +29,7 @@ ink * ink-price >= mat * art / ray
 **`rum`** - Total sin ie debt owed by some ilk
 **`sin`** - internal anti-dai, represents 1 dai of debt
 **`skr`**
-**`tab`** - 
+**`tab`** - Normalized debt
 **`tag`** - Market price of some gem
 **`tax`** - Stability fee, wad per second
 **`urn`** - A CDP record, has properties ilk, lad, art, ink

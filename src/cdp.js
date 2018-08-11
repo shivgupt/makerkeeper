@@ -68,6 +68,7 @@ cdp.openCDP = () => {
 // peth (BN) units of peth to lock-up as collateral in our CDP
 cdp.lockPeth = (peth) => {
     
+    // TODO allow tub to spend peth
     var wad = eth.toWad('0.005')
     if (new eth.BN(peth).lt(wad))
     {
@@ -75,12 +76,14 @@ cdp.lockPeth = (peth) => {
         return (null)
     }
     log(`About to lock ${peth} peth in CDP`)
-    return (findMyCDP().then((Mycdp) => {
-        return (sendTx({
-            to: dao.tub.options.address,
-            data: dao.tub.methods.lock(eth.encodeCDP(Mycdp.id), peth ).encodeABI()
-        }))
-    }).catch(die))
+    return eth.approveSpending(dao.tub, tk.peth).then(() => {
+        return (findMyCDP().then((Mycdp) => {
+            return (sendTx({
+                to: dao.tub.options.address,
+                data: dao.tub.methods.lock(eth.encodeCDP(Mycdp.id), peth ).encodeABI()
+            }))
+        }).catch(die))
+    }).catch(die)
 }
 
 
@@ -118,11 +121,13 @@ cdp.drawDai = (dai) => {
 // amt of mkr required to clear all debt = rap(cdp)/peek(val)
 cdp.wipeDai = (dai) => {
     log(`About to wipe ${dai} debt`)
-    return (findMyCDP().then ( (Mycdp) => {
-        return (sendTx({
-            to: dao.tub.options.address,
-            data: dao.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
-        }))
+    return eth.approveSpending(dao.tub, tk.mkr).then(() => {
+        return (findMyCDP().then ( (Mycdp) => {
+            return (sendTx({
+                to: dao.tub.options.address,
+                data: dao.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
+            }))
+        }).catch(die))
     }).catch(die))
 }
 
@@ -175,8 +180,57 @@ cdp.get_draw_amt = (liq_price) => {
 
         const denominator = LP.sub( rmul(liq_ratio, tag).div(new BN('1000000000')) ) // wad
 
-        
         return utils.wdiv(numerator, denominator).toString() // wad
+
+    }).catch(die)
+}
+
+cdp.get_free_amt = (liq_price) => {
+
+    var BN = eth.BN
+    var rmul = utils.rmul
+    var wmul = utils.wmul
+
+    return Promise.all([
+        findMyCDP(),
+        dao.vox.methods.par().call(),
+        dao.tub.methods.mat().call(),
+        dao.tub.methods.per().call(),
+        dao.tub.methods.chi().call(),
+        dao.tub.methods.tag().call()
+    ]).then(res=>{
+
+        const mycdp = res[0]
+        const ink = new BN(mycdp.ink) // wad
+        const art = new BN(mycdp.art) // wad
+
+        const par = new BN(res[1]) // ray
+        const mat = new BN(res[2]) // ray
+        const per = new BN(res[3]) // ray
+        const chi = new BN(res[4]) // ray
+        const tag = new BN(res[5]) // ray?!
+
+        log(`ink=${ink.toString()} art=${art.toString()} par=${par.toString()} mat=${mat.toString()} per=${per.toString()} tag=${tag.toString()} chi=${chi.toString()}`)
+        const debt = rmul(rmul(rmul(par,mat),chi),art)
+        const col = rmul(per,ink)
+
+        // Liquidity ratio
+        log(utils.wdiv(debt,col).toString())
+
+        // Liquidity price with 18 decimal place
+        const LP = rmul(liq_price, per) // wad
+
+        //const liq_ratio = rmul( rmul( par, chi), mat) // ray
+
+        // ink - numerator/denominator
+        // num = par[ray] * art[wad] * chi[ray] * mat[ray]
+        // denom = lp[wad]
+        
+        const numerator = wmul(art, rmul(par, rmul(chi, mat))) // wad
+        const denominator = LP // wad
+        const result = ink.sub( utils.wdiv(numerator, denominator))
+
+        return result.toString() // wad
 
     }).catch(die)
 }
@@ -197,6 +251,9 @@ cdp.safeDraw = (tlr) => {
             }).catch(die)
         }).catch(die)
     }).catch(die)
+}
+
+cdp.safeFree = (tlr) => {
 }
 
 export { cdp }
