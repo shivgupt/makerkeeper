@@ -80,6 +80,7 @@ eth.approveSpending = (spender, toSpend) => {
                 data: toSpend.methods.approve(spender.options.address, maxINT).encodeABI()
             }))
         } else {
+            console.log(`${spender} already approved to spend ${toSpend}`)
             return (true)
         }
     }).catch(die))

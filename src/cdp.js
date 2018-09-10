@@ -13,15 +13,6 @@ const die = utils.die('CDP')
 
 var CDP_ID = null
 
-// find CDP owned by ETH_ADDRESS env var
-const findMyCDP = () => {
-    return findCDP(process.env.ETH_ADDRESS.toLowerCase()).then((Mycdp) => {
-        log(`CDP: ${JSON.stringify(Mycdp, null, 2)}`)
-        CDP_ID = Mycdp.id
-        return Mycdp
-    })
-}
-
 const findCDP = (address) => {
     if (CDP_ID && process.env.ETH_ADDRESS.toLowerCase() === address.toLowerCase()) {
         return (dao.tub.methods.cups(eth.encodeCDP(CDP_ID)).call().then((Mycdp) => {
@@ -48,6 +39,23 @@ const findCDP = (address) => {
     }
 }
 
+const findCDPbyID = (_id) => {
+    var id = _id || 327 // hardcode mine hehe
+    return dao.tub.methods.cups(eth.encodeCDP(id)).call().then(cdp => {
+        cdp.id = id
+        return cdp
+    })
+}
+
+// find CDP owned by ETH_ADDRESS env var
+const findMyCDP = () => {
+    return findCDP(process.env.ETH_ADDRESS.toLowerCase()).then((Mycdp) => {
+        log(`CDP: ${JSON.stringify(Mycdp, null, 2)}`)
+        CDP_ID = Mycdp.id
+        return Mycdp
+    })
+}
+
 const getBalance = (token, account) => {
     return token.methods.balanceOf(account).call().then(t => { return (new eth.BN(t))}).catch(die)
 }
@@ -57,6 +65,9 @@ const getBalance = (token, account) => {
 ////////////////////////////////////////
 
 const cdp = {}
+cdp.findCDP = findCDP
+cdp.findMyCdp = findMyCDP
+cdp.findCDPbyID = findCDPbyID
 
 cdp.openCDP = () => {
     return (sendTx({
@@ -122,13 +133,15 @@ cdp.drawDai = (dai) => {
 cdp.wipeDai = (dai) => {
     log(`About to wipe ${dai} debt`)
     return eth.approveSpending(dao.tub, tk.mkr).then(() => {
-        return (findMyCDP().then ( (Mycdp) => {
-            return (sendTx({
-                to: dao.tub.options.address,
-                data: dao.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
-            }))
-        }).catch(die))
-    }).catch(die))
+        return eth.approveSpending(dao.tub, tk.dai).then(() => {
+            return (findMyCDP().then ( (Mycdp) => {
+                return (sendTx({
+                    to: dao.tub.options.address,
+                    data: dao.tub.methods.wipe(eth.encodeCDP(Mycdp.id), dai).encodeABI()
+                }))
+            }).catch(die))
+        }).catch(die)
+    }).catch(die)
 }
 
 cdp.freePeth = (peth) => {
