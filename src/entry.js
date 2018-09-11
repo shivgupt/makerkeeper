@@ -23,8 +23,8 @@ mk.load = (amt) => {
     }).catch(die)
 }
 
-mk.unload = () => {
-    var wei = eth.toWad(amt)
+mk.unload = (wei) => {
+    //var wei = eth.toWad(amt)
     // TODO: safeFree
     return cdp.freePeth(wei).then(() => {
         return ex.pethToWeth(wei).then((weth) => {
@@ -71,10 +71,10 @@ mk.unwind_to_lp = (lp) => {
     })
 }
 
-mk.cdp = cdp
-mk.ex = ex
-mk.eth = eth
-mk.tk = tk
-mk.dao = dao
+global.cdp = cdp
+global.ex = ex
+global.eth = eth
+global.tk = tk
+global.dao = dao
 
 export default mk

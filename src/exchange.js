@@ -61,7 +61,7 @@ ex.ethToWeth = (ether) => {
 }
 
 // weth (BN): units of weth being converted
-ex.wethToeth = (weth) => {
+ex.wethToEth = (weth) => {
     log(`About to convert ${weth} weth to eth`)
     return sendTx({
         to: tk.weth.options.address,

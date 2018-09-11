@@ -3,6 +3,9 @@ import BN from 'bn.js'
 
 global.BN = BN
 
+global.l = console.log
+global.lj = x => console.log(JSON.stringify(x, null, 2))
+
 ////////////////////////////////////////
 // Exported object methods
 ////////////////////////////////////////

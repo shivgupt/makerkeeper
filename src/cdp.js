@@ -40,7 +40,7 @@ const findCDP = (address) => {
 }
 
 const findCDPbyID = (_id) => {
-    var id = _id || 327 // hardcode mine hehe
+    var id = _id || 327 // hardcode mine hehe. Others: 736, 836
     return dao.tub.methods.cups(eth.encodeCDP(id)).call().then(cdp => {
         cdp.id = id
         return cdp
@@ -49,7 +49,10 @@ const findCDPbyID = (_id) => {
 
 // find CDP owned by ETH_ADDRESS env var
 const findMyCDP = () => {
-    return findCDP(process.env.ETH_ADDRESS.toLowerCase()).then((Mycdp) => {
+    const address = process.env.ETH_ADDRESS.toLowerCase();
+    if (address === '0xb2fc8a24f1ac52c577df7be839cf2a4304e08a92') return findCDPbyID(327)
+    if (address === '0xfbf86ad0adf2f0df934335a6d33c9004e85a5e2b') return findCDPbyID(836)
+    return findCDP().then((Mycdp) => {
         log(`CDP: ${JSON.stringify(Mycdp, null, 2)}`)
         CDP_ID = Mycdp.id
         return Mycdp
