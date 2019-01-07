@@ -1,12 +1,12 @@
 {
-  "name": "makerkeeper",
+  "name": "@bohendo/makerkeeper",
   "version": "1.0.0",
-  "description": "",
+  "description": "Tools for playing with MakerDAO contracts",
   "main": "build/makerkeeper.js",
   "scripts": {
-    "build": "make"
+    "prepare": "webpack --config ./ops/webpack.js"
   },
-  "author": "",
+  "author": "Bo & Shiv Henderson",
   "license": "ISC",
   "dependencies": {
     "babel-core": "^6.26.0",
